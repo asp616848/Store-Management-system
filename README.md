@@ -76,6 +76,7 @@ This repository is licensed under the [MIT License](https://opensource.org/licen
 
 This store system repository is maintained by [Abhijeet/asp616848].
 This readme file is completely AI written with the header file code reference alone, read the code for in-depth understanding.
+
 ---
 
 Feel free to expand this documentation further based on your project's specific requirements and include details about additional features, usage examples, or any other relevant information.
