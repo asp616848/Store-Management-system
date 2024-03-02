@@ -22,7 +22,7 @@ This repository contains a C++ implementation of a store system, designed to man
    - **Store**: Combines functionalities related to inventory and accounts management within the store.
 
 ---
-
+![Image Alt text](iNVENTORYflow.png)
 #### Usage
 
 1. **Accounts Management**:
