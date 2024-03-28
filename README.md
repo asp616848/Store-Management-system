@@ -1,4 +1,5 @@
-## Store Management system
+## Store Management system 
+[work in progress]
 ---
 
 #### Introduction
