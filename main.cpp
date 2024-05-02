@@ -282,6 +282,10 @@ private:
         cout << "User account created successfully." << endl;
     }
 
+    void stockAlert()
+    {
+        cout << "Stock Empty Alert!" << endl;
+    }
     void createSeller() {
         string username, password;
         cout << "Enter username: ";
