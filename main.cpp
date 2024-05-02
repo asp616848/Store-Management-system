@@ -282,7 +282,7 @@ private:
         cout << "User account created successfully." << endl;
     }
 
-    void stockAlert()
+    void stockAlert() // TODO
     {
         cout << "Stock Empty Alert!" << endl;
     }
