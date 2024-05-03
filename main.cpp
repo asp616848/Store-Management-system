@@ -371,6 +371,7 @@ int main() {
     {
  
     Inventory inventory;
+    inventory.loadInventoryFromFile("inventory.csv");
     cout << "-----------------------------------------------------------" <<endl;
     cout << "---------------Inventory Management System ----------------" <<endl;   
     cout << "-----------------------------------------------------------" <<endl;
