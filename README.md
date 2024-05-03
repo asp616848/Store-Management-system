@@ -67,16 +67,6 @@ Contributions to this repository are welcome. If you find any bugs or have sugge
 
 ---
 
-#### License
-
-This repository is licensed under the [MIT License](https://opensource.org/licenses/MIT). Feel free to use, modify, and distribute the code for personal or commercial purposes.
-
----
-
-#### Author
-
-This store system repository is maintained by [Abhijeet/asp616848].
-This readme file is completely AI written with the header file code reference alone, read the code for in-depth understanding.
 
 ---
 
