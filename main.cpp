@@ -137,6 +137,16 @@ class Inventory
     private:
         vector<Product> products;
     public:
+        void printAllProducts() const{
+            for(auto i=products.begin();i!=products.end();i++)
+            {
+                cout<<"ID : "<<i->getId()<<endl;
+                cout<<"Name : "<<i->getName()<<endl;
+                cout<<"Category : "<<i->getCategory()<<endl;
+                cout<<"Price : $"<<i->getPrice()<<endl;
+                cout<<"Quantity : "<<i->getQuantity()<<endl;
+            }
+        }
         void addProduct(Product product)
         {
             bool found = false;
@@ -183,6 +193,7 @@ class Inventory
 
         Product* findProduct(int id)
         {
+            cout << "FINDING!" << endl;
             for(auto i=products.begin();i!=products.end();i++)
             {
                 if(i->getId()==id)
@@ -427,14 +438,12 @@ public:
                 }
                 break;
             case '6':
+                inventory.printAllProducts();
                 if (loggedInAccount && loggedInAccount->getType() == "User") {
                     double total = 0;
                     char choice;
                     do {
-                        for(Product prod : inventory.getProducts())
-                        {
-                            cout << "ID: " << prod.getId() << ", Name: " << prod.getName() << ", Price: $" << prod.getPrice() << ", Quantity: " << prod.getQuantity() << endl;
-                        }
+                        
                         int id;
                         cout << "Enter product id: ";
                         cin >> id;
@@ -507,20 +516,20 @@ public:
 
 int main() {
     int option;
+    Store store; // solved the instantiation problem
+    store.Load();
+    Inventory inventory;
+    inventory.loadInventoryFromFile("inventory.csv");
+
     cout << "Enter 1 if you want to enter accounts and 0 if you want to enter inventory: ";
     cin >> option;
     if(option==1)
     {
-    Store store;
-    store.Load();
+    
     store.run();
     }
     else
     {
- 
-    Inventory inventory;
-    inventory.loadInventoryFromFile("inventory.csv");
-
     cout << "-----------------------------------------------------------" <<endl;
     cout << "---------------Inventory Management System ----------------" <<endl;   
     cout << "-----------------------------------------------------------" <<endl;
