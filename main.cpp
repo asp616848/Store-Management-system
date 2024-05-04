@@ -73,17 +73,22 @@ class Product
         int quantity;
         int sales;
     public:
+
+        int getSales() const{
+            return sales;
+        }
         void addSales(int quantity)
         {
             sales+=quantity;
         }
-        Product(int id, string name, string category, double price, int quantity)
+        Product(int id, string name, string category, double price, int quantity, int sales=0)
         {
             this->id=id;
             this->name=name;
             this->category=category;
             this->price=price;
             this->quantity=quantity;
+            this->sales=sales;
         }
 
         int getId() const{
@@ -243,18 +248,20 @@ class Inventory
                 while (getline(file, line)) 
                 {
                     stringstream ss(line);
-                    string idStr, name, category, priceStr, quantityStr;
+                    string idStr, name, category, priceStr, quantityStr, salesStr;
                     getline(ss, idStr, ',');
                     getline(ss, name, ',');
                     getline(ss, category, ',');
                     getline(ss, priceStr, ',');
                     getline(ss, quantityStr, ',');
+                    getline(ss, salesStr, ',');
 
                     int id = stoi(idStr);
                     double price = stod(priceStr);
                     int quantity = stoi(quantityStr);
+                    int sales = stoi(salesStr);
 
-                    Product p(id, name, category, price, quantity);
+                    Product p(id, name, category, price, quantity, sales);
                     products.push_back(p);
                 }
 
@@ -332,7 +339,7 @@ private:
         file.open("users.csv");
 
         for (const auto& acc : accounts) {
-            file << acc->getType() << "," << acc->getUsername() << acc->getUsername() << acc->expenditure << endl;
+            file << acc->getType() << "," << acc->getUsername()<< "," << acc->getPassword()<< "," << acc->expenditure << endl;
         }
         file.close();
     }
@@ -344,12 +351,12 @@ private:
             string line;
             while (getline(file, line)) {
                 stringstream ss(line);
-                string type, username, password;
-                int expenditure;
+                string type, username, password, exp;
                 getline(ss, type, ',');
                 getline(ss, username, ',');
                 getline(ss, password, ',');
-                ss >> expenditure;
+                getline(ss, exp, ',');
+                double expenditure = stoi(exp);
 
                 if (type == "User") {
                     accounts.push_back(new UserAccount(username, password, expenditure));
@@ -424,13 +431,23 @@ public:
                     double total = 0;
                     char choice;
                     do {
+                        for(Product prod : inventory.getProducts())
+                        {
+                            cout << "ID: " << prod.getId() << ", Name: " << prod.getName() << ", Price: $" << prod.getPrice() << ", Quantity: " << prod.getQuantity() << endl;
+                        }
                         int id;
                         cout << "Enter product id: ";
                         cin >> id;
+                        Product* product = inventory.findProduct(id);
+
                         int quantity;
                         cout << "Enter quantity: ";
                         cin >> quantity;
-                        Product* product = inventory.findProduct(id);
+                        while(quantity<=0 || quantity > product->getQuantity())
+                        {
+                            cout << "Enter quantity in the range of 1 to " << product->getQuantity() << ":\n";
+                            cin >> quantity;
+                        }
                         if (product->getQuantity() >= quantity) {
                             total += product->getPrice() * quantity;
                             cout << "Product added to cart. Total: $" << total << endl;
@@ -462,6 +479,17 @@ public:
                     return a1->expenditure < a2->expenditure;
                 };
                 priority_queue<Account*, vector<Account*>, decltype(compare)> pq(compare);
+                for (const auto& acc : accounts) {
+                    pq.push(acc);
+                }
+                int i = 9;
+                cout << "Top 10 highest spending users:" << endl;
+                while (i) {
+                    Account* acc = pq.top();
+                    pq.pop();
+                    cout << "Username: " << acc->getUsername() << ", Expenditure: " << acc->expenditure << endl;
+                    i--;
+                }
                 break;
             }
 
@@ -596,6 +624,14 @@ int main() {
             cout << "-----------------------------------------------------------" <<endl;
             break;
         }
+        case '8': { // CAN't do variable declaration in switch case
+                cout << "List of highest spending users in descending order:" << endl;
+                auto compare = [](const Product* a1, const Product* a2) { // Using pointers
+                    return a1->getSales() < a2->getSales();
+                };
+                priority_queue<Product*, vector<Product*>, decltype(compare)> pq(compare);
+                break;
+            }
         case 'Q':
             cout << "Goodbye!" << endl;
             cout << "-----------------------------------------------------------" <<endl;
