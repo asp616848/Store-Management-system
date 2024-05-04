@@ -3,6 +3,7 @@
 #include<string>
 #include<sstream>
 #include<fstream>
+#include<queue>
 using namespace std;
 
 class Account {
@@ -10,7 +11,17 @@ protected:
     string username;
     string password;
 public:
-    Account(const string& username, const string& password) : username(username), password(password) {}
+    double expenditure =0;
+    bool operator<(const Account& other) const {
+        return expenditure < other.expenditure; // max heap
+    }
+    string getUsername() const {
+        return username;
+    }
+    string getPassword() const {
+        return password;
+    }
+    Account(const string& username, const string& password, int expenditure = 0) : username(username), password(password), expenditure(expenditure) {}
     virtual bool authenticate(const string& inputUsername, const string& inputPassword) const 
     {
         return username == inputUsername && password == inputPassword;
@@ -22,8 +33,7 @@ public:
 class UserAccount : public Account {
     double balance;
 public:
-    UserAccount(const string& username, const string& password) : Account(username, password) {}
-
+    UserAccount(const string& username, const string& password, int expenditure = 0) : Account(username, password, expenditure) {}
     string getType() const override {
         return "User";
     }
@@ -117,7 +127,6 @@ class Inventory
 {
     private:
         vector<Product> products;
-    
     public:
         void addProduct(Product product)
         {
@@ -139,6 +148,10 @@ class Inventory
             }
         }            
 
+        vector<Product> getProducts() const // return the products but not modify them
+        {
+            return products;
+        }
         void removeProduct(int id)
         {
             bool found = false;
@@ -215,39 +228,38 @@ class Inventory
             file.close();
         }
 
-    void loadInventoryFromFile(string filename) 
-    {
-        ifstream file;
-        file.open(filename);
-
-        if (file.is_open()) 
+        void loadInventoryFromFile(string filename) 
         {
-            string line;
-            while (getline(file, line)) 
+            ifstream file;
+            file.open(filename);
+
+            if (file.is_open()) 
             {
-                stringstream ss(line);
-                string idStr, name, category, priceStr, quantityStr;
-                getline(ss, idStr, ',');
-                getline(ss, name, ',');
-                getline(ss, category, ',');
-                getline(ss, priceStr, ',');
-                getline(ss, quantityStr, ',');
+                string line;
+                while (getline(file, line)) 
+                {
+                    stringstream ss(line);
+                    string idStr, name, category, priceStr, quantityStr;
+                    getline(ss, idStr, ',');
+                    getline(ss, name, ',');
+                    getline(ss, category, ',');
+                    getline(ss, priceStr, ',');
+                    getline(ss, quantityStr, ',');
 
-                int id = stoi(idStr);
-                double price = stod(priceStr);
-                int quantity = stoi(quantityStr);
+                    int id = stoi(idStr);
+                    double price = stod(priceStr);
+                    int quantity = stoi(quantityStr);
 
-                Product p(id, name, category, price, quantity);
-                products.push_back(p);
+                    Product p(id, name, category, price, quantity);
+                    products.push_back(p);
+                }
+
+                file.close();
+            } else {
+                cout << "Error: Could not open file " << filename << endl;
             }
-
-            file.close();
-        } else {
-            cout << "Error: Could not open file " << filename << endl;
         }
-    }
 };
-
 class Store {
 private:
     Inventory inventory;
@@ -284,6 +296,13 @@ private:
 
     void stockAlert() // TODO
     {
+        for(auto i=inventory.getProducts().begin();i!=inventory.getProducts().end();i++)
+        {
+            if(i->getQuantity() <= 4)
+            {
+                cout<<"Stock Empty Alert! for product : "<< i->getName() << "With product quantity" << i->getQuantity() <<endl;
+            }
+        }
         cout << "Stock Empty Alert!" << endl;
     }
     void createSeller() {
@@ -296,18 +315,59 @@ private:
         accounts.push_back(new SellerAccount(username, password));
         cout << "Seller account created successfully." << endl;
     }
+    void saveToFile() {
+        ofstream file;
+        file.open("users.csv");
+
+        for (const auto& acc : accounts) {
+            file << acc->getType() << "," << acc->getUsername() << acc->getUsername() << acc->expenditure << endl;
+        }
+        file.close();
+    }
+    void loadFromFile() {
+        ifstream file;
+        file.open("users.csv");
+
+        if (file.is_open()) {
+            string line;
+            while (getline(file, line)) {
+                stringstream ss(line);
+                string type, username, password;
+                int expenditure;
+                getline(ss, type, ',');
+                getline(ss, username, ',');
+                getline(ss, password, ',');
+                ss >> expenditure;
+
+                if (type == "User") {
+                    accounts.push_back(new UserAccount(username, password, expenditure));
+                } else if (type == "Seller") {
+                    accounts.push_back(new SellerAccount(username, password));
+                }
+            }
+
+            file.close();
+        } else {
+            cout << "Error: Could not open file accounts.txt" << endl;
+        }
+    }
 
 public:
+
     Store() {
         // create some default accounts for testing
         accounts.push_back(new UserAccount("user1", "password1"));
         accounts.push_back(new SellerAccount("seller1", "password1"));
     }
+    void Load()
+    {
+        loadFromFile();
+    }
 
     void run() {
         char choice;
         Account* loggedInAccount = nullptr;
-
+        priority_queue<Account> pq(accounts.begin(), accounts.end());
         do {
             cout << "Please choose an option:" << endl;
             cout << "1. Login" << endl;
@@ -315,6 +375,9 @@ public:
             cout << "3. Create Seller Account" << endl;
             cout << "4. Update Balance (for users)" << endl;
             cout << "5. View Users with Balances (for sellers)" << endl;
+            cout << "6. Make a purchase (Customers Only)" << endl;
+            cout << "7. Stock Alert" << endl;
+            cout << "8. List of highest spending users" << endl;
             cout << "Q. Quit" << endl;
             cin >> choice;
 
@@ -346,9 +409,52 @@ public:
                     cout << "You need to be logged in as a seller to view users with balances." << endl;
                 }
                 break;
-            case 'q':
+            case '6':
+                if (loggedInAccount && loggedInAccount->getType() == "User") {
+                    double total = 0;
+                    char choice;
+                    do {
+                        int id;
+                        cout << "Enter product id: ";
+                        cin >> id;
+                        int quantity;
+                        cout << "Enter quantity: ";
+                        cin >> quantity;
+                        Product* product = inventory.findProduct(id);
+                        if (product->getQuantity() >= quantity) {
+                            total += product->getPrice() * quantity;
+                            cout << "Product added to cart. Total: $" << total << endl;
+                        } else {
+                            cout << "Product not found." << endl;
+                        }
+                        cout << "Do you want to add more products to cart? (Y/N): ";
+                        product->setQuantity(product->getQuantity()-quantity);  //updating the inventory product quantity
+                        cin >> choice;
+                    } while (choice == 'Y' || choice == 'y');
+
+                    if (total > 0) {
+                        static_cast<UserAccount*>(loggedInAccount)->updateBalance(-total);
+                        loggedInAccount->expenditure += total;
+                    }
+                } else {
+                    cout << "You need to be logged in as a user to make a purchase." << endl;
+                }
+                break;
+            case '7':
+                stockAlert();
+                break;
+            case '8':
+                cout << "List of highest spending users in descending order:" << endl;
+                // first 10 highest spending users
+                for (int i = 0; i < 10 && !pq.empty(); i++) {
+                    auto acc = pq.top();  // TODO Could not get the data type so using auto for now
+                    cout << "Username: " << acc.getUsername() << ", Expenditure: " << acc.expenditure << endl;
+                    pq.pop();
+                }
+                break;
             case 'Q':
                 cout << "Goodbye!" << endl;
+                saveToFile();
                 return;
             default:
                 cout << "Invalid Choice. Please Try again" << endl;
@@ -365,6 +471,7 @@ int main() {
     if(option==1)
     {
     Store store;
+    store.Load();
     store.run();
     }
     else
@@ -372,6 +479,7 @@ int main() {
  
     Inventory inventory;
     inventory.loadInventoryFromFile("inventory.csv");
+
     cout << "-----------------------------------------------------------" <<endl;
     cout << "---------------Inventory Management System ----------------" <<endl;   
     cout << "-----------------------------------------------------------" <<endl;
@@ -475,7 +583,6 @@ int main() {
             cout << "-----------------------------------------------------------" <<endl;
             break;
         }
-        case 'q':
         case 'Q':
             cout << "Goodbye!" << endl;
             cout << "-----------------------------------------------------------" <<endl;
