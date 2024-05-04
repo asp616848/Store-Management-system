@@ -26,14 +26,18 @@ public:
     {
         return username == inputUsername && password == inputPassword;
     }
-
+    virtual double getBalance() const {
+        return 0;
+    }
     virtual string getType() const = 0;
 };
 
 class UserAccount : public Account {
     double balance;
 public:
-    UserAccount(const string& username, const string& password, int expenditure = 0) : Account(username, password, expenditure) {}
+    UserAccount(const string& username, const string& password, int expenditure = 0, int balance) : Account(username, password, expenditure) {
+        this->balance = balance;
+    }
     string getType() const override {
         return "User";
     }
@@ -79,7 +83,7 @@ class Product
         }
         void addSales(int quantity)
         {
-            sales+=quantity;
+            this->sales+=quantity;
         }
         Product(int id, string name, string category, double price, int quantity, int sales=0)
         {
@@ -239,11 +243,11 @@ class Inventory
         void saveInventoryToFile(string filename) 
         {
             ofstream file;
-            file.open(filename, ios::out | ios::app);
+            file.open(filename, ios::out | ios::trunc);
             for (int i = 0; i < products.size(); i++) 
             {
                 Product p = products[i];
-                file << p.getId() << "," << p.getName() << "," << p.getCategory() << "," << p.getPrice() << "," << p.getQuantity() << endl;
+                file << p.getId() << "," << p.getName() << "," << p.getCategory() << "," << p.getPrice() << "," << p.getQuantity()<< ","<< p.getSales() << endl;
             }
             file.close();
         }
@@ -283,18 +287,11 @@ class Inventory
         }
 };
 
-struct CompareAccounts {
-    bool operator()(const Account& a1, const Account& a2) {
-        // Max expenditure account should be at the top
-        return a1.expenditure < a2.expenditure; // Using '<' for max heap
-    }
-};
-
 class Store {
 private:
     Inventory inventory;
     vector<Account*> accounts;
-    
+
     Account* login() {
         string username, password;
         cout << "Enter username: ";
@@ -350,7 +347,7 @@ private:
         file.open("users.csv");
 
         for (const auto& acc : accounts) {
-            file << acc->getType() << "," << acc->getUsername()<< "," << acc->getPassword()<< "," << acc->expenditure << endl;
+            file << acc->getType() << "," << acc->getUsername()<< "," << acc->getPassword()<< "," << acc->expenditure << "," << acc->getBalance() << endl;
         }
         file.close();
     }
@@ -362,15 +359,18 @@ private:
             string line;
             while (getline(file, line)) {
                 stringstream ss(line);
-                string type, username, password, exp;
+                string type, username, password, exp, bal;
                 getline(ss, type, ',');
                 getline(ss, username, ',');
                 getline(ss, password, ',');
                 getline(ss, exp, ',');
+                getline(ss, bal, ',');
                 double expenditure = stoi(exp);
+                double balance = stoi(bal);
+
 
                 if (type == "User") {
-                    accounts.push_back(new UserAccount(username, password, expenditure));
+                    accounts.push_back(new UserAccount(username, password, expenditure, balance));
                 } else if (type == "Seller") {
                     accounts.push_back(new SellerAccount(username, password));
                 }
@@ -383,8 +383,12 @@ private:
     }
 
 public:
+    Inventory getInventory() const {
+        return inventory;
+    }
     Store() {
         // create some default accounts for testing, removed from here
+        inventory.loadInventoryFromFile("inventory.csv");
     }
     void Load()
     {
@@ -436,6 +440,7 @@ public:
                 }
                 break;
             case '6':{
+                cout<< "_____________________________________________________" << endl;
                 inventory.printAllProducts();
                 if (loggedInAccount && loggedInAccount->getType() == "User") {
                     double total = 0;
@@ -465,11 +470,12 @@ public:
                         product->addSales(quantity); //updating the sales of the product
                         cin >> choice;
                     } while (choice == 'Y' || choice == 'y');
-
+                    cout << "Total amount: $" << total << endl<< "Transaction Completed!" << endl;
                     if (total > 0) {
                         static_cast<UserAccount*>(loggedInAccount)->updateBalance(-total);
                         loggedInAccount->expenditure += total;
                     }
+                    inventory.saveInventoryToFile("inventory.csv");
                 } else {
                     cout << "You need to be logged in as a user to make a purchase." << endl;
                 }
@@ -517,15 +523,11 @@ int main() {
     int option;
     Store store; // solved the instantiation problem
     store.Load();
-    Inventory inventory;
-    inventory.loadInventoryFromFile("inventory.csv");
-
-    inventory.printProduct();
+    Inventory inventory = store.getInventory();
     cout << "Enter 1 if you want to enter accounts and 0 if you want to enter inventory: ";
     cin >> option;
     if(option==1)
     {
-    
     store.run();
     }
     else
@@ -546,7 +548,8 @@ int main() {
         cout << "6. Save inventory to file" << endl;
         cout << "7. Load Inventory from file" << endl;
         cout << "8. Get most selling products" << endl;
-        cout << "Q. Quit, And go to stock management screen" << endl;
+        cout << "Q. Quit, and terminate" << endl;
+        cout << "Q. Quit, And go to Accounts Screen" << endl;
         cin >> choice;
 
         switch (choice) {
@@ -656,7 +659,11 @@ int main() {
             cout << "Goodbye!" << endl;
             cout << "-----------------------------------------------------------" <<endl;
             return 0;
-        
+        case 'q':
+            cout << "Welcome to Accounts!" << endl;
+            store.run();
+            cout << "-----------------------------------------------------------" <<endl;
+            return 0;
         default:
             cout << "Invalid Choice. Please Try again" << endl;
             cout << "-----------------------------------------------------------" <<endl;
@@ -664,6 +671,5 @@ int main() {
         }
     } while (true);
     }
-
     return 0;
 }
