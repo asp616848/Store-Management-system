@@ -11,10 +11,10 @@ protected:
     string username;
     string password;
 public:
-    double expenditure =0;
-    bool operator<(const Account& other) const {
-        return expenditure < other.expenditure; // max heap
+    static bool compareByExpenditure(const Account* a, const Account* b) {
+        return a->expenditure < b->expenditure; // Use < for descending order
     }
+    double expenditure =0;
     string getUsername() const {
         return username;
     }
@@ -71,8 +71,12 @@ class Product
         string category;
         double price;
         int quantity;
-    
+        int sales;
     public:
+        void addSales(int quantity)
+        {
+            sales+=quantity;
+        }
         Product(int id, string name, string category, double price, int quantity)
         {
             this->id=id;
@@ -260,6 +264,14 @@ class Inventory
             }
         }
 };
+
+struct CompareAccounts {
+    bool operator()(const Account& a1, const Account& a2) {
+        // Max expenditure account should be at the top
+        return a1.expenditure < a2.expenditure; // Using '<' for max heap
+    }
+};
+
 class Store {
 private:
     Inventory inventory;
@@ -353,7 +365,6 @@ private:
     }
 
 public:
-
     Store() {
         // create some default accounts for testing
         accounts.push_back(new UserAccount("user1", "password1"));
@@ -367,7 +378,6 @@ public:
     void run() {
         char choice;
         Account* loggedInAccount = nullptr;
-        priority_queue<Account> pq(accounts.begin(), accounts.end());
         do {
             cout << "Please choose an option:" << endl;
             cout << "1. Login" << endl;
@@ -429,6 +439,7 @@ public:
                         }
                         cout << "Do you want to add more products to cart? (Y/N): ";
                         product->setQuantity(product->getQuantity()-quantity);  //updating the inventory product quantity
+                        product->addSales(quantity); //updating the sales of the product
                         cin >> choice;
                     } while (choice == 'Y' || choice == 'y');
 
@@ -440,18 +451,20 @@ public:
                     cout << "You need to be logged in as a user to make a purchase." << endl;
                 }
                 break;
+
             case '7':
                 stockAlert();
                 break;
-            case '8':
+
+            case '8': { // CAN't do variable declaration in switch case
                 cout << "List of highest spending users in descending order:" << endl;
-                // first 10 highest spending users
-                for (int i = 0; i < 10 && !pq.empty(); i++) {
-                    auto acc = pq.top();  // TODO Could not get the data type so using auto for now
-                    cout << "Username: " << acc.getUsername() << ", Expenditure: " << acc.expenditure << endl;
-                    pq.pop();
-                }
+                auto compare = [](const Account* a1, const Account* a2) { // Using pointers
+                    return a1->expenditure < a2->expenditure;
+                };
+                priority_queue<Account*, vector<Account*>, decltype(compare)> pq(compare);
                 break;
+            }
+
             case 'Q':
                 cout << "Goodbye!" << endl;
                 saveToFile();
