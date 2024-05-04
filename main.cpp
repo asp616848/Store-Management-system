@@ -384,9 +384,7 @@ private:
 
 public:
     Store() {
-        // create some default accounts for testing
-        accounts.push_back(new UserAccount("user1", "password1"));
-        accounts.push_back(new SellerAccount("seller1", "password1"));
+        // create some default accounts for testing, removed from here
     }
     void Load()
     {
@@ -437,13 +435,12 @@ public:
                     cout << "You need to be logged in as a seller to view users with balances." << endl;
                 }
                 break;
-            case '6':
+            case '6':{
                 inventory.printAllProducts();
                 if (loggedInAccount && loggedInAccount->getType() == "User") {
                     double total = 0;
                     char choice;
                     do {
-                        
                         int id;
                         cout << "Enter product id: ";
                         cin >> id;
@@ -476,14 +473,14 @@ public:
                 } else {
                     cout << "You need to be logged in as a user to make a purchase." << endl;
                 }
-                break;
+                break;}
 
             case '7':
                 stockAlert();
                 break;
 
             case '8': { // CAN't do variable declaration in switch case
-                cout << "List of highest spending users in descending order:" << endl;
+                cout << "\nList of highest spending users in descending order:" << endl;
                 auto compare = [](const Account* a1, const Account* a2) { // Using pointers
                     return a1->expenditure < a2->expenditure;
                 };
@@ -493,15 +490,17 @@ public:
                 }
                 int i = 9;
                 cout << "Top 10 highest spending users:" << endl;
-                while (i) {
+
+                while (i && !pq.empty()) {
                     Account* acc = pq.top();
                     pq.pop();
                     cout << "Username: " << acc->getUsername() << ", Expenditure: " << acc->expenditure << endl;
                     i--;
                 }
+                cout << "-----------------------------------------------------------" <<endl;
                 break;
             }
-
+            
             case 'Q':
                 cout << "Goodbye!" << endl;
                 saveToFile();
@@ -521,6 +520,7 @@ int main() {
     Inventory inventory;
     inventory.loadInventoryFromFile("inventory.csv");
 
+    inventory.printProduct();
     cout << "Enter 1 if you want to enter accounts and 0 if you want to enter inventory: ";
     cin >> option;
     if(option==1)
@@ -545,6 +545,7 @@ int main() {
         cout << "5. View all products" << endl;
         cout << "6. Save inventory to file" << endl;
         cout << "7. Load Inventory from file" << endl;
+        cout << "8. Get most selling products" << endl;
         cout << "Q. Quit, And go to stock management screen" << endl;
         cin >> choice;
 
@@ -616,7 +617,6 @@ int main() {
             cout << "-----------------------------------------------------------" <<endl;
             break;
         }
-
         case '5': {
             inventory.printProduct();
             break;
@@ -634,13 +634,24 @@ int main() {
             break;
         }
         case '8': { // CAN't do variable declaration in switch case
-                cout << "List of highest spending users in descending order:" << endl;
-                auto compare = [](const Product* a1, const Product* a2) { // Using pointers
-                    return a1->getSales() < a2->getSales();
+                auto compare = [](const Product& p1, const Product& p2) { // Using pointers
+                    return p1.getSales()*p1.getPrice() < p2.getSales()*p1.getPrice();
                 };
-                priority_queue<Product*, vector<Product*>, decltype(compare)> pq(compare);
+                priority_queue<Product, vector<Product>, decltype(compare)> pq(compare);
+                for (const auto& p : inventory.getProducts()) {
+                    pq.push(p);
+                }
+                int i = 9;
+                cout << "Top 10 highest selling products:" << endl;
+                while (i) {
+                    Product p = pq.top();
+                    pq.pop();
+                    cout << "Product Name: " << p.getName() << ", Sales: " << p.getSales() << endl;
+                    i--;
+                }
                 break;
             }
+
         case 'Q':
             cout << "Goodbye!" << endl;
             cout << "-----------------------------------------------------------" <<endl;
