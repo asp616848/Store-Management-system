@@ -35,7 +35,7 @@ public:
 class UserAccount : public Account {
     double balance;
 public:
-    UserAccount(const string& username, const string& password, int expenditure = 0, int balance) : Account(username, password, expenditure) {
+    UserAccount(const string& username, const string& password, int expenditure = 0, int balance =0) : Account(username, password, expenditure) {
         this->balance = balance;
     }
     string getType() const override {
@@ -291,6 +291,29 @@ class Store {
 private:
     Inventory inventory;
     vector<Account*> accounts;
+    // caesar cipher
+    void encrypt(string& str) {
+        int key = 3; // the key
+        for (char& c : str) {
+            if (isalpha(c)) {
+                c = ((c - 'a' + key) % 26) + 'a'; 
+            } else if (isupper(c)) {
+                c = ((c - 'A' + key) % 26) + 'A'; 
+            }
+        }
+    }
+    void decrypt(string& str) {
+        int key = 3; // You should use the same key that you used for encryption
+        for (char& c : str) {
+            if (isalpha(c)) {
+                if (islower(c)) {
+                    c = (((c - 'a' - key) % 26 + 26) % 26) + 'a'; // Decrypt lowercase letters
+                } else {
+                    c = (((c - 'A' - key) % 26 + 26) % 26) + 'A'; // Decrypt uppercase letters
+                }
+            }
+        }
+    }
 
     Account* login() {
         string username, password;
@@ -342,15 +365,30 @@ private:
         accounts.push_back(new SellerAccount(username, password));
         cout << "Seller account created successfully." << endl;
     }
+
     void saveToFile() {
         ofstream file;
         file.open("users.csv");
 
         for (const auto& acc : accounts) {
-            file << acc->getType() << "," << acc->getUsername()<< "," << acc->getPassword()<< "," << acc->expenditure << "," << acc->getBalance() << endl;
+            string a = acc->getType();
+            string b = acc->getUsername();
+            string c = acc->getPassword();
+            double d = acc->expenditure;
+            double e = acc->getBalance();
+
+            encrypt(a);
+            encrypt(b);
+            encrypt(c);
+
+            d = d + 1029932;
+            e = e + 1029932;
+
+            file << a << "," << b << "," << c << "," << d << "," << e << endl;
         }
         file.close();
     }
+
     void loadFromFile() {
         ifstream file;
         file.open("users.csv");
@@ -368,6 +406,11 @@ private:
                 double expenditure = stoi(exp);
                 double balance = stoi(bal);
 
+                decrypt(type);
+                decrypt(username);
+                decrypt(password);
+                expenditure = expenditure - 1029932;
+                balance = balance - 1029932;
 
                 if (type == "User") {
                     accounts.push_back(new UserAccount(username, password, expenditure, balance));
@@ -383,6 +426,13 @@ private:
     }
 
 public:
+
+    void printAccounts(){
+        for(Account* each : accounts){
+            cout << each->getUsername() << endl;
+            cout << each->getPassword() << endl;
+        }
+    }
     Inventory getInventory() const {
         return inventory;
     }
@@ -523,6 +573,8 @@ int main() {
     int option;
     Store store; // solved the instantiation problem
     store.Load();
+    store.printAccounts();
+    
     Inventory inventory = store.getInventory();
     cout << "Enter 1 if you want to enter accounts and 0 if you want to enter inventory: ";
     cin >> option;
