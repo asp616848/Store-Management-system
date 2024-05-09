@@ -77,7 +77,9 @@ class Product
         int quantity;
         int sales;
     public:
-
+        bool operator<(const Product& other) const {
+            return sales * price < other.sales * other.price;
+        } //ANCHOR - for priority queue
         int getSales() const{
             return sales;
         }
@@ -689,10 +691,8 @@ int main() {
             break;
         }
         case '8': { // CAN't do variable declaration in switch case
-                auto compare = [](const Product& p1, const Product& p2) { // Using pointers
-                    return p1.getSales()*p1.getPrice() < p2.getSales()*p1.getPrice();
-                };
-                priority_queue<Product, vector<Product>, decltype(compare)> pq(compare);
+                
+                priority_queue<Product> pq;
                 for (const auto& p : inventory.getProducts()) {
                     pq.push(p);
                 }
