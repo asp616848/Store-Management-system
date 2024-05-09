@@ -288,11 +288,15 @@ class Inventory
             }
         }
 };
-struct comparator {
-    bool operator()(const Account* a1, const Account* a2) {
-        return a1->expenditure < a2->expenditure;
-    }
-};
+// struct comparator {
+//     bool operator()(const Account* a1, const Account* a2) {
+//         return a1->expenditure < a2->expenditure;
+//     }
+// };
+bool compareAccounts(const Account* a1, const Account* a2) {
+    return a1->expenditure < a2->expenditure;
+}
+
 class Store {
 private:
     Inventory inventory;
@@ -543,12 +547,9 @@ public:
 
             case '8': { // CAN't do variable declaration in switch case
                 cout << "\nList of highest spending users in descending order:" << endl;
-                // auto compare = [](const Account* a1, const Account* a2) { // Using pointers  //NOTE - Can't understand
-                //     return a1->expenditure < a2->expenditure;
-                // };
-                // priority_queue<Account*, vector<Account*>, decltype(compare)> pq(compare);
 
-                priority_queue<Account*, vector<Account*>, comparator> pq;
+                // priority_queue<Account*, vector<Account*>, comparator> pq; //ANCHOR - This uses class or functor
+                priority_queue<Account*, vector<Account*>, decltype(compareAccounts)*> pq(compareAccounts);  // this uses function pointer
                 for (const auto& acc : accounts) {
                     pq.push(acc);
                 }
