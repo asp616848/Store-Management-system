@@ -288,7 +288,11 @@ class Inventory
             }
         }
 };
-
+struct comparator {
+    bool operator()(const Account* a1, const Account* a2) {
+        return a1->expenditure < a2->expenditure;
+    }
+};
 class Store {
 private:
     Inventory inventory;
@@ -383,8 +387,8 @@ private:
             encrypt(b);
             encrypt(c);
 
-            d = d + 1029932;
-            e = e + 1029932;
+            d = d + 1029;
+            e = e + 1029;
 
             file << a << "," << b << "," << c << "," << d << "," << e << endl;
         }
@@ -411,8 +415,8 @@ private:
                 decrypt(type);
                 decrypt(username);
                 decrypt(password);
-                expenditure = expenditure - 1029932;
-                balance = balance - 1029932;
+                expenditure = expenditure - 1029;
+                balance = balance - 1029;
 
                 if (type == "User") {
                     accounts.push_back(new UserAccount(username, password, expenditure, balance));
@@ -539,10 +543,12 @@ public:
 
             case '8': { // CAN't do variable declaration in switch case
                 cout << "\nList of highest spending users in descending order:" << endl;
-                auto compare = [](const Account* a1, const Account* a2) { // Using pointers
-                    return a1->expenditure < a2->expenditure;
-                };
-                priority_queue<Account*, vector<Account*>, decltype(compare)> pq(compare);
+                // auto compare = [](const Account* a1, const Account* a2) { // Using pointers  //NOTE - Can't understand
+                //     return a1->expenditure < a2->expenditure;
+                // };
+                // priority_queue<Account*, vector<Account*>, decltype(compare)> pq(compare);
+
+                priority_queue<Account*, vector<Account*>, comparator> pq;
                 for (const auto& acc : accounts) {
                     pq.push(acc);
                 }
@@ -603,7 +609,7 @@ int main() {
         cout << "7. Load Inventory from file" << endl;
         cout << "8. Get most selling products" << endl;
         cout << "Q. Quit, and terminate" << endl;
-        cout << "Q. Quit, And go to Accounts Screen" << endl;
+        cout << "q. Quit, And go to Accounts Screen" << endl;
         cin >> choice;
 
         switch (choice) {
