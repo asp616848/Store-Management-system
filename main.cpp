@@ -527,14 +527,13 @@ public:
                         } else {
                             cout << "Product not found." << endl;
                             cout << "-----------------------------------------------------------" <<endl;
-
                         }
                         cout << "Do you want to add more products to cart? (Y/N): ";
                         product->setQuantity(product->getQuantity()-quantity);  //updating the inventory product quantity
                         product->addSales(quantity); //updating the sales of the product
                         cin >> choice;
                     } while (choice == 'Y' || choice == 'y');
-                    cout << "Total amount: " << total << endl<< "Transaction Completed!" << endl;
+                    cout << "Total amount: ₹" << total << endl<< "Transaction Completed!" << endl;
                     if (total > 0) {
                         static_cast<UserAccount*>(loggedInAccount)->updateBalance(-total);
                         loggedInAccount->expenditure += total;
