@@ -66,7 +66,6 @@ public:
     }
 };
 
-
 class Product
 {
     private:
@@ -231,17 +230,6 @@ class Inventory
             }
         }        
 
-        void printProduct() const{
-            for(auto i=products.begin();i!=products.end();i++)
-            {
-                cout<<"ID : "<<i->getId()<<endl;
-                cout<<"Name : "<<i->getName()<<endl;
-                cout<<"Category : "<<i->getCategory()<<endl;
-                cout<<"Price : ₹"<<i->getPrice()<<endl;
-                cout<<"Quantity : "<<i->getQuantity()<<endl;
-            }
-        }
-
         void saveInventoryToFile(string filename) 
         {
             ofstream file;
@@ -297,6 +285,7 @@ class Store {
 private:
     Inventory inventory;
     vector<Account*> accounts;
+    Account* loggedInAccount = nullptr;
     // caesar cipher
     void encrypt(string& str) {
         int key = 3; // the key
@@ -453,7 +442,6 @@ public:
 
     void run() {
         char choice;
-        Account* loggedInAccount = nullptr;
         do {
             cout << "-----------------------------------------------------------" <<endl;
             cout << "Please choose an option:" << endl;
@@ -512,22 +500,26 @@ public:
                         cout << "Enter product id: ";
                         cin >> id;
                         Product* product = inventory.findProduct(id);
-
                         int quantity;
+                        if (!product) {
+                            cout << "Product not found." << endl;
+                            cout << "-----------------------------------------------------------" <<endl;
+                            continue;
+                        }
                         cout << "Enter quantity: ";
                         cin >> quantity;
                         while(quantity<=0 || quantity > product->getQuantity())
                         {
-                            cout << "Enter quantity in the range of 1 to " << product->getQuantity() << ":\n";
+                            cout << "Enter quantity in the range of 1 to " << product->getQuantity() << ": (_Enter Q to quit_)\n";
                             cin >> quantity;
                         }
-                        if (product->getQuantity() >= quantity) {
-                            total += product->getPrice() * quantity;
-                            cout << "Product added to cart. Total: ₹" << total << endl;
-                        } else {
-                            cout << "Product not found." << endl;
-                            cout << "-----------------------------------------------------------" <<endl;
+                        total += product->getPrice() * quantity;
 
+                        if(loggedInAccount->getBalance() < total)  // When user has insufficient balance
+                        {
+                            cout << "Insufficient Balance! Retry" << endl;
+                            cout << "-----------------------------------------------------------" <<endl;
+                            this->run();
                         }
                         cout << "Do you want to add more products to cart? (Y/N): ";
                         product->setQuantity(product->getQuantity()-quantity);  //updating the inventory product quantity
@@ -688,7 +680,7 @@ int main() {
             break;
         }
         case '5': {
-            inventory.printProduct();
+            inventory.printAllProducts();
             break;
         }
         case '6': {
