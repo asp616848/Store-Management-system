@@ -9,6 +9,7 @@
 #include<algorithm>
 using namespace std;
 
+// Base class for accounts
 class Account {
 protected:
     string username; 
@@ -17,7 +18,7 @@ public:
     static bool compareByExpenditure(const Account* a, const Account* b) {
         return a->expenditure < b->expenditure; // Use < for descending order
     } //compares account by expenditure for the purpose of trend analysis to understand who spends most
-    
+
     double expenditure =0;
     string getUsername() const {
         return username;
@@ -25,7 +26,11 @@ public:
     string getPassword() const {
         return password;
     }
+    // Constructor to initialize username, password, and expenditure
     Account(const string& username, const string& password, int expenditure = 0) : username(username), password(password), expenditure(expenditure) {}
+
+    // Virtual method to authenticate login credentials by comparing stored username 
+    //and password to the entered credentials
     virtual bool authenticate(const string& inputUsername, const string& inputPassword) const 
     {
         return username == inputUsername && password == inputPassword;
@@ -36,12 +41,16 @@ public:
     virtual string getAccountType() const = 0;
 };
 
+// Derived class for customer accounts
 class CustomerAccount : public Account {
     double balance;
 public:
+
+// Constructor to initialize username, password, expenditure, and balance
     CustomerAccount(const string& username, const string& password, int expenditure = 0, int balance =0) : Account(username, password, expenditure) {
         this->balance = balance;
     }
+    // Overrides the getAccountType() method from the base class Account
     string getAccountType() const override {
         return "User";
     }
@@ -53,13 +62,20 @@ public:
     }
 };
 
+// Derived class for merchant accounts
 class MerchantAccount : public Account {
+
 public:
+    // Constructor to initialize username and password
     MerchantAccount(const string& username, const string& password) : Account(username, password) {}
 
+    // Overrides the getAccountType() method from the base class Account
     string getAccountType() const override {
         return "Seller";
     }
+
+    // Iterates through the provided vector of accounts, checks if each account is a CustomerAccount,
+    // and prints the username & balance (non-zero)
     void viewUsersWithBalances(const vector<Account*>& accounts) {
         cout << "Users with balances:" << endl;
         for (const auto& acc : accounts) {
