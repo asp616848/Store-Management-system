@@ -29,16 +29,16 @@ public:
     virtual double getBalance() const {
         return 0;
     }
-    virtual string getType() const = 0;
+    virtual string getAccountType() const = 0;
 };
 
-class UserAccount : public Account {
+class CustomerAccount : public Account {
     double balance;
 public:
-    UserAccount(const string& username, const string& password, int expenditure = 0, int balance =0) : Account(username, password, expenditure) {
+    CustomerAccount(const string& username, const string& password, int expenditure = 0, int balance =0) : Account(username, password, expenditure) {
         this->balance = balance;
     }
-    string getType() const override {
+    string getAccountType() const override {
         return "User";
     }
     double getBalance() const {
@@ -49,18 +49,18 @@ public:
     }
 };
 
-class SellerAccount : public Account {
+class MerchantAccount : public Account {
 public:
-    SellerAccount(const string& username, const string& password) : Account(username, password) {}
+    MerchantAccount(const string& username, const string& password) : Account(username, password) {}
 
-    string getType() const override {
+    string getAccountType() const override {
         return "Seller";
     }
     void viewUsersWithBalances(const vector<Account*>& accounts) {
         cout << "Users with balances:" << endl;
         for (const auto& acc : accounts) {
-            if (dynamic_cast<UserAccount*>(acc)) {
-                cout << "Username: " << username << ", Balance: " << static_cast<UserAccount*>(acc)->getBalance() << endl;
+            if (dynamic_cast<CustomerAccount*>(acc)) {
+                cout << "Username: " << username << ", Balance: " << static_cast<CustomerAccount*>(acc)->getBalance() << endl;
             }
         }
     }
@@ -80,7 +80,7 @@ class Product
         bool operator<(const Product& other) const {
             return sales * price < other.sales * other.price;
         } //ANCHOR - for priority queue
-        int getSales() const{
+        int getTotalSales() const{
             return sales;
         }
         void addSales(int quantity)
@@ -249,7 +249,7 @@ class Inventory
             for (int i = 0; i < products.size(); i++) 
             {
                 Product p = products[i];
-                file << p.getId() << "," << p.getName() << "," << p.getCategory() << "," << p.getPrice() << "," << p.getQuantity()<< ","<< p.getSales() << endl;
+                file << p.getId() << "," << p.getName() << "," << p.getCategory() << "," << p.getPrice() << "," << p.getQuantity()<< ","<< p.getTotalSales() << endl;
             }
             file.close();
         }
@@ -330,7 +330,7 @@ private:
 
         for (Account* acc : accounts) {
             if (acc->authenticate(username, password)) {
-                cout << "Login successful. Welcome, " << username << " (" << acc->getType() << ")" << endl;
+                cout << "Login successful. Welcome, " << username << " (" << acc->getAccountType() << ")" << endl;
                 return acc;
             }
         }
@@ -346,7 +346,7 @@ private:
         cout << "Enter password: ";
         cin >> password;
 
-        accounts.push_back(new UserAccount(username, password));
+        accounts.push_back(new CustomerAccount(username, password));
         cout << "User account created successfully." << endl;
     }
 
@@ -368,7 +368,7 @@ private:
         cout << "Enter password: ";
         cin >> password;
 
-        accounts.push_back(new SellerAccount(username, password));
+        accounts.push_back(new MerchantAccount(username, password));
         cout << "Seller account created successfully." << endl;
     }
 
@@ -377,7 +377,7 @@ private:
         file.open("users.csv");
 
         for (const auto& acc : accounts) {
-            string a = acc->getType();
+            string a = acc->getAccountType();
             string b = acc->getUsername();
             string c = acc->getPassword();
             double d = acc->expenditure;
@@ -419,9 +419,9 @@ private:
                 balance = balance - 1029;
 
                 if (type == "User") {
-                    accounts.push_back(new UserAccount(username, password, expenditure, balance));
+                    accounts.push_back(new CustomerAccount(username, password, expenditure, balance));
                 } else if (type == "Seller") {
-                    accounts.push_back(new SellerAccount(username, password));
+                    accounts.push_back(new MerchantAccount(username, password));
                 }
             }
 
@@ -479,13 +479,13 @@ public:
                 createSeller();
                 break;
             case '4':
-                if (loggedInAccount && loggedInAccount->getType() == "User") {
+                if (loggedInAccount && loggedInAccount->getAccountType() == "User") {
                     double amount;
                     cout << "-----------------------------------------------------------" <<endl;
 
                     cout << "Enter amount to update balance: ";
                     cin >> amount;
-                    static_cast<UserAccount*>(loggedInAccount)->updateBalance(amount);
+                    static_cast<CustomerAccount*>(loggedInAccount)->updateBalance(amount);
                     cout << "Balance updated successfully." << endl;
                 } else {
                     cout << "You need to be logged in as a user to update balance." << endl;
@@ -493,8 +493,8 @@ public:
                 }
                 break;
             case '5':
-                if (loggedInAccount && loggedInAccount->getType() == "Seller") {
-                    static_cast<SellerAccount*>(loggedInAccount)->viewUsersWithBalances(accounts);
+                if (loggedInAccount && loggedInAccount->getAccountType() == "Seller") {
+                    static_cast<MerchantAccount*>(loggedInAccount)->viewUsersWithBalances(accounts);
                 } else {
                     cout << "You need to be logged in as a seller to view users with balances." << endl;
                     cout << "-----------------------------------------------------------" <<endl;
@@ -504,7 +504,7 @@ public:
             case '6':{
                 cout<< "_____________________________________________________" << endl;
                 inventory.printAllProducts();
-                if (loggedInAccount && loggedInAccount->getType() == "User") {
+                if (loggedInAccount && loggedInAccount->getAccountType() == "User") {
                     double total = 0;
                     char choice;
                     do {
@@ -535,7 +535,7 @@ public:
                     } while (choice == 'Y' || choice == 'y');
                     cout << "Total amount: ₹" << total << endl<< "Transaction Completed!" << endl;
                     if (total > 0) {
-                        static_cast<UserAccount*>(loggedInAccount)->updateBalance(-total);
+                        static_cast<CustomerAccount*>(loggedInAccount)->updateBalance(-total);
                         loggedInAccount->expenditure += total;
                     }
                     inventory.saveInventoryToFile("inventory.csv");
@@ -713,7 +713,7 @@ int main() {
                 while (i) {
                     Product p = pq.top();
                     pq.pop();
-                    cout << "Product Name: " << p.getName() << ", Sales: " << p.getSales() << endl;
+                    cout << "Product Name: " << p.getName() << ", Sales: " << p.getTotalSales() << endl;
                     i--;
                 }
                 break;
