@@ -143,7 +143,10 @@ class Inventory
 {
     private:
         vector<Product> products;
+
     public:
+        
+
         void printAllProducts() const{
             for(auto i=products.begin();i!=products.end();i++)
             {
@@ -158,8 +161,8 @@ class Inventory
         void addProduct(Product product)
         {
             // Check if the product ID already exists using binary search
-            bool it = binary_search(products.begin(), products.end(), product);
-            if (it == false)
+            Product* found = findProduct(product.getId());
+            if (found != nullptr)
             {
                 cout << "Id already exists." << endl;
                 cout << "-----------------------------------------------------------" <<endl;
@@ -171,40 +174,47 @@ class Inventory
                 cout << "Product added successfully." << endl;
                 cout << "-----------------------------------------------------------" <<endl;
             }
-        }    
+        }
 
         vector<Product> getProducts() const // return the products but not modify them
         {
             return products;
         }
+
         void removeProduct(int id)
         {
-            bool found = false;
-            for (auto i = products.begin(); i != products.end(); i++)
+            Product* found = findProduct(id);
+            if (found != nullptr)
             {
-                if (i->getId() == id)
-                {
-                    products.erase(i);
-                    found = true;
-                    cout << "Product removed successfully." << endl;        
-                    cout << "-----------------------------------------------------------" <<endl;
-                    break;
-                }
+                auto index = found - &products[0]; // Calculate the index of the found product
+                products.erase(products.begin() + index); // Erase the product at the calculated index
+                cout << "Product removed successfully." << endl;        
+                cout << "-----------------------------------------------------------" <<endl;
             }
-            if (!found)
+            else
             {
                 cout << "Id does not exist" << endl;
             }
         }
 
-        Product* findProduct(int id)
+        Product* findProduct(int id)  //removed search logic elsewhere and called this func
         {
-            cout << "FINDING!" << endl;
-            for(auto i=products.begin();i!=products.end();i++)
+            int low = 0;
+            int high = products.size() - 1;
+            while (low <= high)
             {
-                if(i->getId()==id)
+                int mid = low + (high - low) / 2;
+                if (products[mid].getId() == id)
                 {
-                    return &(*i);
+                    return &products[mid];
+                }
+                else if (products[mid].getId() < id)
+                {
+                    low = mid + 1;
+                }
+                else
+                {
+                    high = mid - 1;
                 }
             }
             return nullptr;
