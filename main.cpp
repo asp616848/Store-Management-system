@@ -4,6 +4,8 @@
 #include<sstream>
 #include<fstream>
 #include<queue>
+#include<cstdlib>
+#include<algorithm>
 using namespace std;
 
 class Account {
@@ -149,28 +151,27 @@ class Inventory
                 cout<<"Name : "<<i->getName()<<endl;
                 cout<<"Category : "<<i->getCategory()<<endl;
                 cout<<"Price : ₹"<<i->getPrice()<<endl;
-                cout<<"Quantity : "<<i->getQuantity()<<endl;
+                cout<<"Quantity : "<<i->getQuantity()<<endl << endl;
             }
         }
+
         void addProduct(Product product)
         {
-            bool found = false;
-            for (auto& p : products)
+            // Check if the product ID already exists using binary search
+            bool it = binary_search(products.begin(), products.end(), product);
+            if (it == false)
             {
-                if (p.getId() == product.getId())
-                {
-                    cout << "Id already Exist."<< endl;
-                    found = true;
-                    break;
-                }
+                cout << "Id already exists." << endl;
+                cout << "-----------------------------------------------------------" <<endl;
             }
-            if (!found)
+            else
             {
+                // Insert the product at the appropriate position to maintain sorted order
                 products.push_back(product);
                 cout << "Product added successfully." << endl;
                 cout << "-----------------------------------------------------------" <<endl;
             }
-        }            
+        }    
 
         vector<Product> getProducts() const // return the products but not modify them
         {
@@ -579,10 +580,11 @@ public:
 };
 
 int main() {
+    system("\x1b[32m");
+
     int option;
     Store store; // solved the instantiation problem
     store.Load();
-    store.printAccounts();
     
     Inventory inventory = store.getInventory();
     cout << "Enter 1 if you want to enter accounts and 0 if you want to enter inventory: ";
@@ -715,10 +717,12 @@ int main() {
 
         case 'Q':
             cout << "Goodbye!" << endl;
+            inventory.saveInventoryToFile("inventory.csv");
             cout << "-----------------------------------------------------------" <<endl;
             return 0;
         case 'q':
             cout << "Welcome to Accounts!" << endl;
+            inventory.saveInventoryToFile("inventory.csv");
             store.run();
             cout << "-----------------------------------------------------------" <<endl;
             return 0;
