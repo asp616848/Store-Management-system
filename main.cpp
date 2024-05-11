@@ -10,7 +10,7 @@ using namespace std;
 
 class Account {
 protected:
-    string username;
+    string username; //MICHELE
     string password;
 public:
     static bool compareByExpenditure(const Account* a, const Account* b) {
