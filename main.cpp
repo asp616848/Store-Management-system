@@ -95,17 +95,23 @@ class Product
         double price;
         int quantity;
         int sales;
+
     public:
+    // Operator overloading to compare products
         bool operator<(const Product& other) const {
             return sales * price < other.sales * other.price;
         } //ANCHOR - for priority queue
         int getTotalSales() const{
             return sales;
         }
+
+        // Increases the total sales of the product by the specified quantity
         void addSales(int quantity)
         {
             this->sales+=quantity;
         }
+
+        // Constructor to initialize product details
         Product(int id, string name, string category, double price, int quantity, int sales=0)
         {
             this->id=id;
@@ -116,6 +122,7 @@ class Product
             this->sales=sales;
         }
 
+        // Accesors for product details
         int getId() const{
             return id;
         }
