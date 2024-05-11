@@ -149,7 +149,7 @@ class Inventory
                 cout<<"ID : "<<i->getId()<<endl;
                 cout<<"Name : "<<i->getName()<<endl;
                 cout<<"Category : "<<i->getCategory()<<endl;
-                cout<<"Price : $"<<i->getPrice()<<endl;
+                cout<<"Price : ₹"<<i->getPrice()<<endl;
                 cout<<"Quantity : "<<i->getQuantity()<<endl;
             }
         }
@@ -237,7 +237,7 @@ class Inventory
                 cout<<"ID : "<<i->getId()<<endl;
                 cout<<"Name : "<<i->getName()<<endl;
                 cout<<"Category : "<<i->getCategory()<<endl;
-                cout<<"Price : $"<<i->getPrice()<<endl;
+                cout<<"Price : ₹"<<i->getPrice()<<endl;
                 cout<<"Quantity : "<<i->getQuantity()<<endl;
             }
         }
@@ -288,11 +288,7 @@ class Inventory
             }
         }
 };
-// struct comparator {
-//     bool operator()(const Account* a1, const Account* a2) {
-//         return a1->expenditure < a2->expenditure;
-//     }
-// };
+
 bool compareAccounts(const Account* a1, const Account* a2) {
     return a1->expenditure < a2->expenditure;
 }
@@ -459,6 +455,7 @@ public:
         char choice;
         Account* loggedInAccount = nullptr;
         do {
+            cout << "-----------------------------------------------------------" <<endl;
             cout << "Please choose an option:" << endl;
             cout << "1. Login" << endl;
             cout << "2. Create User Account" << endl;
@@ -484,12 +481,15 @@ public:
             case '4':
                 if (loggedInAccount && loggedInAccount->getType() == "User") {
                     double amount;
+                    cout << "-----------------------------------------------------------" <<endl;
+
                     cout << "Enter amount to update balance: ";
                     cin >> amount;
                     static_cast<UserAccount*>(loggedInAccount)->updateBalance(amount);
                     cout << "Balance updated successfully." << endl;
                 } else {
                     cout << "You need to be logged in as a user to update balance." << endl;
+                    cout << "-----------------------------------------------------------" <<endl;
                 }
                 break;
             case '5':
@@ -497,6 +497,8 @@ public:
                     static_cast<SellerAccount*>(loggedInAccount)->viewUsersWithBalances(accounts);
                 } else {
                     cout << "You need to be logged in as a seller to view users with balances." << endl;
+                    cout << "-----------------------------------------------------------" <<endl;
+
                 }
                 break;
             case '6':{
@@ -521,16 +523,18 @@ public:
                         }
                         if (product->getQuantity() >= quantity) {
                             total += product->getPrice() * quantity;
-                            cout << "Product added to cart. Total: $" << total << endl;
+                            cout << "Product added to cart. Total: ₹" << total << endl;
                         } else {
                             cout << "Product not found." << endl;
+                            cout << "-----------------------------------------------------------" <<endl;
+
                         }
                         cout << "Do you want to add more products to cart? (Y/N): ";
                         product->setQuantity(product->getQuantity()-quantity);  //updating the inventory product quantity
                         product->addSales(quantity); //updating the sales of the product
                         cin >> choice;
                     } while (choice == 'Y' || choice == 'y');
-                    cout << "Total amount: $" << total << endl<< "Transaction Completed!" << endl;
+                    cout << "Total amount: " << total << endl<< "Transaction Completed!" << endl;
                     if (total > 0) {
                         static_cast<UserAccount*>(loggedInAccount)->updateBalance(-total);
                         loggedInAccount->expenditure += total;
@@ -538,6 +542,8 @@ public:
                     inventory.saveInventoryToFile("inventory.csv");
                 } else {
                     cout << "You need to be logged in as a user to make a purchase." << endl;
+                    cout << "-----------------------------------------------------------" <<endl;
+
                 }
                 break;}
 
@@ -546,6 +552,7 @@ public:
                 break;
 
             case '8': { // CAN't do variable declaration in switch case
+                cout << "-----------------------------------------------------------" <<endl;
                 cout << "\nList of highest spending users in descending order:" << endl;
 
                 // priority_queue<Account*, vector<Account*>, comparator> pq; //ANCHOR - This uses class or functor
@@ -594,8 +601,7 @@ int main() {
     else
     {
     cout << "-----------------------------------------------------------" <<endl;
-    cout << "---------------Inventory Management System ----------------" <<endl;   
-    cout << "-----------------------------------------------------------" <<endl;
+    cout << "---------------Inventory Management System ----------------" <<endl;  
     cout << "------------------------- Welcome! ------------------------" <<endl;
     cout << "-----------------------------------------------------------" <<endl;
     char choice;
@@ -625,7 +631,7 @@ int main() {
             cin >> name;
             cout << "Enter product category: ";
             cin >> category;
-            cout << "Enter product price: $ ";
+            cout << "Enter product price: ₹ ";
             cin >> price;
             cout << "Enter product quantity: ";
             cin >> quantity;
@@ -650,7 +656,7 @@ int main() {
             if (product) {
                 cout << "Name: " << product->getName() << endl;
                 cout << "Category: " << product->getCategory() << endl;
-                cout << "Price: $ " << product->getPrice() << endl;
+                cout << "Price: ₹ " << product->getPrice() << endl;
                 cout << "Quantity: " << product->getQuantity() << endl;
                 cout << "-----------------------------------------------------------" <<endl;
             }
@@ -672,7 +678,7 @@ int main() {
             cin >> name;
             cout << "Enter new product category: ";
             cin >> category;
-            cout << "Enter new product price: $ ";
+            cout << "Enter new product price: ₹ ";
             cin >> price;
             cout << "Enter new product quantity: ";
             cin >> quantity;
