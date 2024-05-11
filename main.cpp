@@ -11,12 +11,13 @@ using namespace std;
 
 class Account {
 protected:
-    string username; //MICHELE
-    string password;
+    string username; 
+    string password; 
 public:
     static bool compareByExpenditure(const Account* a, const Account* b) {
         return a->expenditure < b->expenditure; // Use < for descending order
-    }
+    } //compares account by expenditure for the purpose of trend analysis to understand who spends most
+    
     double expenditure =0;
     string getUsername() const {
         return username;
