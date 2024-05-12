@@ -5,7 +5,7 @@
 #### Introduction
 
 This repository contains a C++ implementation of a store system, designed to manage user accounts, seller accounts, inventory, and store operations. It provides functionalities for users to purchase products, sellers to manage their inventory, and administrators to oversee the system.
-![Image Alt text](flowaccounts.png)
+![Image Alt text](singleFile/flowaccounts.png)
 ---
 
 #### Components
@@ -23,7 +23,7 @@ This repository contains a C++ implementation of a store system, designed to man
    - **Store**: Combines functionalities related to inventory and accounts management within the store.
 
 ---
-![Image Alt text](iNVENTORYflow.png)
+![Image Alt text](singleFile/iNVENTORYflow.png)
 #### Usage
 
 1. **Accounts Management**:
