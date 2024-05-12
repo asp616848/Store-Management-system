@@ -10,8 +10,6 @@ int main() {
     int option;
     Store store; // solved the instantiation problem
     store.Load();
-    
-    Inventory inventory = store.getInventory();
     cout << "Enter 1 if you want to enter accounts and 0 if you want to enter inventory: ";
     cin >> option;
     if(option==1)

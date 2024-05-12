@@ -4,9 +4,7 @@ bool Product::operator<(const Product &other) const {
     return sales * price < other.sales * other.price;
 }
 
-int Product::getTotalSales() const {
-    return sales;
-}
+int Product::getTotalSales() const {return sales; }
 
 void Product::addSales(int quantity) {
     this->sales += quantity;
