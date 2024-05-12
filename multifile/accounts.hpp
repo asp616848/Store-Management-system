@@ -2,6 +2,7 @@
 #define ACCOUNT_H
 
 #include <string>
+#include <vector>
 
 class Account {
 protected:

@@ -31,6 +31,7 @@ public:
     Store();
     void Load();
     void run();
+    void runInv();
 };
 
 #endif // STORE_HPP
