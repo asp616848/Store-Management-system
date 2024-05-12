@@ -194,7 +194,7 @@ class Inventory
             }
             else
             {
-                // Insert the product and maintain sorted order
+                // Insert the new product at the back of the products vector
                 products.push_back(product);
                 cout << "Product added successfully." << endl;
                 cout << "-----------------------------------------------------------" <<endl;
