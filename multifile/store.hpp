@@ -24,7 +24,7 @@ private:
     void createSeller();
     void saveToFile();
     void loadFromFile();
-
+    
 public:
     void printAccounts();
     Inventory getInventory() const;

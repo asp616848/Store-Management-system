@@ -6,7 +6,7 @@ bool compareAccounts(const Account *a1, const Account *a2)
 {
     return a1->expenditure < a2->expenditure;
 }
-void Store::encrypt(std::string &str) {
+void Store::encrypt(string &str) {
     int key = 3;
     for (char &c : str) {
         if (isalpha(c)) {
@@ -19,7 +19,7 @@ void Store::encrypt(std::string &str) {
     }
 }
 
-void Store::decrypt(std::string &str) {
+void Store::decrypt(string &str) {
     int key = 3;
     for (char &c : str) {
         if (isalpha(c)) {
@@ -33,66 +33,69 @@ void Store::decrypt(std::string &str) {
 }
 
 Account *Store::login() {
-    std::string username, password;
-    std::cout << "Enter username: ";
-    std::cin >> username;
-    std::cout << "Enter password: ";
-    std::cin >> password;
+    string username, password;
+    cin.ignore();
+    cout << "Enter username: ";
+    getline(cin, username);
+    cout << "Enter password: ";
+    getline(cin, password);
 
     for (Account *acc : accounts) {
         if (acc->authenticate(username, password)) {
-            std::cout << "Login successful. Welcome, " << username << " (" << acc->getAccountType() << ")" << std::endl;
+            cout << "Login successful. Welcome, " << username << " (" << acc->getAccountType() << ")" << endl;
             return acc;
         }
     }
 
-    std::cout << "Login failed. Invalid username or password." << std::endl;
+    cout << "Login failed. Invalid username or password." << endl;
     return nullptr;
 }
 
 void Store::createUser() {
-    std::string username, password;
-    std::cout << "Enter username: ";
-    std::cin >> username;
-    std::cout << "Enter password: ";
-    std::cin >> password;
 
+    string username, password;
+    cout << "Enter username: ";
+    cin.ignore();
+    getline(cin, username);
+    cout << "Enter password: ";
+    getline(cin, password);
     accounts.push_back(new CustomerAccount(username, password));
-    std::cout << "User account created successfully." << std::endl;
+    cout << "User account created successfully." << endl;
 }
 
 void Store::stockAlert() {
     bool alert = false;
     for (const auto &product : inventory.getProducts()) {
         if (product.getQuantity() <= 4) {
-            std::cout << "Stock Empty Alert! for product: " << product.getName() << " with product quantity: " << product.getQuantity() << std::endl;
+            cout << "Stock Empty Alert! for product: " << product.getName() << " with product quantity: " << product.getQuantity() << endl;
             alert = true;
         }
     }
     if (!alert) {
-        std::cout << "No products with low stock." << std::endl;
+        cout << "No products with low stock." << endl;
     }
 }
 
 void Store::createSeller() {
-    std::string username, password;
-    std::cout << "Enter username: ";
-    std::cin >> username;
-    std::cout << "Enter password: ";
-    std::cin >> password;
+    string username, password;
+    cout << "Enter username: ";
+    cin.ignore();
+    getline(cin, username);
+    cout << "Enter password: ";
+    getline(cin, password);
 
     accounts.push_back(new MerchantAccount(username, password));
-    std::cout << "Seller account created successfully." << std::endl;
+    cout << "Seller account created successfully." << endl;
 }
 
 void Store::saveToFile() {
-    std::ofstream file;
+    ofstream file;
     file.open("users.csv");
 
     for (const auto &acc : accounts) {
-        std::string a = acc->getAccountType();
-        std::string b = acc->getUsername();
-        std::string c = acc->getPassword();
+        string a = acc->getAccountType();
+        string b = acc->getUsername();
+        string c = acc->getPassword();
         double d = acc->expenditure;
         double e = acc->getBalance();
 
@@ -103,20 +106,20 @@ void Store::saveToFile() {
         d = d + 1029;
         e = e + 1029;
 
-        file << a << "," << b << "," << c << "," << d << "," << e << std::endl;
+        file << a << "," << b << "," << c << "," << d << "," << e << endl;
     }
     file.close();
 }
 
 void Store::loadFromFile() {
-    std::ifstream file;
+    ifstream file;
     file.open("users.csv");
 
     if (file.is_open()) {
-        std::string line;
+        string line;
         while (getline(file, line)) {
-            std::stringstream ss(line);
-            std::string type, username, password, exp, bal;
+            stringstream ss(line);
+            string type, username, password, exp, bal;
             getline(ss, type, ',');
             getline(ss, username, ',');
             getline(ss, password, ',');
@@ -137,17 +140,19 @@ void Store::loadFromFile() {
                 accounts.push_back(new MerchantAccount(username, password));
             }
         }
-
+        if(accounts.size() == 0){
+            cout << "No accounts found. (account.csv must be empty)" << endl;
+        }
         file.close();
     } else {
-        std::cout << "Error: Could not open file accounts.txt" << std::endl;
+        cout << "Error: Could not open file accounts.txt" << endl;
     }
 }
 
 void Store::printAccounts() {
     for (Account *each : accounts) {
-        std::cout << each->getUsername() << std::endl;
-        std::cout << each->getPassword() << std::endl;
+        cout << each->getUsername() << endl;
+        cout << each->getPassword() << endl;
     }
 }
 
@@ -217,7 +222,7 @@ void Store::MakeAPurchase(){
 
             if (loggedInAccount->getBalance() < total) // When user has insufficient balance
             {
-                cout << "Insufficient Balance! Retry" << endl;
+                cout << "Insufficient Balance! kindly add funds and retry" << endl;
                 cout << "-----------------------------------------------------------" << endl;
                 this->run();
             }
@@ -270,6 +275,7 @@ void Store::run() {
                 break;
             case '2':
                 createUser();
+                saveToFile();
                 cout << "-----------------------------------------------------------" <<endl;
                 
                 break;
@@ -327,6 +333,7 @@ void Store::run() {
             case 'Q':
                 cout << "Goodbye!" << endl;
                 saveToFile();
+                runInv();
                 return;
             default:
                 cout << "Invalid Choice. Please Try again" << endl;
@@ -336,7 +343,6 @@ void Store::run() {
         while (true);
 }
 void Store::runInv(){
-    
     cout << "-----------------------------------------------------------" <<endl;
     cout << "---------------Inventory Management System ----------------" <<endl;  
     cout << "------------------------- Welcome! ------------------------" <<endl;
@@ -369,17 +375,20 @@ void Store::runInv(){
             int quantity;
             cout << "-----------------------------------------------------------" <<endl;
             cout << "Enter ID: ";
+
             cin >> id;
             cout << "Enter product name: ";
-            cin >> name;
+            cin.ignore();
+            getline(cin, name);
             cout << "Enter product category: ";
-            cin >> category;
+            getline(cin, category);
             cout << "Enter product price: ₹ ";
             cin >> price;
             cout << "Enter product quantity: ";
             cin >> quantity;
             Product product(id, name, category, price, quantity);
             inventory.addProduct(product);
+            inventory.saveInventoryToFile("inventory.csv");
             break;
         }
 
@@ -388,6 +397,7 @@ void Store::runInv(){
             cout << "Enter product id: ";
             cin >> id;
             inventory.removeProduct(id);
+            inventory.saveInventoryToFile("inventory.csv");
             break;
         }
 
@@ -420,9 +430,11 @@ void Store::runInv(){
             cout << "Enter the product id: ";
             cin >> id;
             cout << "Enter new product name: ";
-            cin >> name;
+            cin.ignore();
+            getline(cin, name);
             cout << "Enter new product category: ";
-            cin >> category;
+            cin.ignore();
+            getline(cin, category);
             cout << "Enter new product price: ₹ ";
             cin >> price;
             cout << "Enter new product quantity: ";
