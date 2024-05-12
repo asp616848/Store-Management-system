@@ -1,86 +1,76 @@
 // these are all the header files
-#include<iostream>
-#include<vector>
-#include<string>
-#include<sstream>
-#include<fstream>
-#include<queue>
-#include<cstdlib>
-#include<algorithm>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <queue>
+#include <cstdlib>
+#include <algorithm>
 using namespace std;
 
 // Base class for accounts
-class Account {
+class Account
+{
 protected:
-    string username; 
-    string password; 
+    string username;
+    string password;
+
 public:
-    static bool compareByExpenditure(const Account* a, const Account* b) {
-        return a->expenditure < b->expenditure; // Use < for descending order
-    } //compares account by expenditure for the purpose of trend analysis to understand who spends most
-
-    double expenditure =0;
-    string getUsername() const {
-        return username;
-    }
-    string getPassword() const {
-        return password;
-    }
-    // Constructor to initialize username, password, and expenditure
-    Account(const string& username, const string& password, int expenditure = 0) : username(username), password(password), expenditure(expenditure) {}
-
-    // Virtual method to authenticate login credentials by comparing stored username 
-    //and password to the entered credentials
-    virtual bool authenticate(const string& inputUsername, const string& inputPassword) const 
+    static bool compareByExpenditure(const Account *a, const Account *b)
     {
-        return username == inputUsername && password == inputPassword;
-    }
-    virtual double getBalance() const {
-        return 0;
-    }
+        return a->expenditure < b->expenditure; // Use < for descending order
+    } // compares account by expenditure for the purpose of trend analysis to understand who spends most
+
+    double expenditure = 0;
+    string getUsername() const {return username;}
+    string getPassword() const {return password;}
+
+    // Constructor to initialize username, password, and expenditure
+    Account(const string &username, const string &password, int expenditure = 0) : username(username), password(password), expenditure(expenditure) {}
+
+    // Virtual method to authenticate login credentials by comparing stored username
+    // and password to the entered credentials
+    virtual bool authenticate(const string &inputUsername, const string &inputPassword) const {return username == inputUsername && password == inputPassword;}
+    virtual double getBalance() const {return 0;}
     virtual string getAccountType() const = 0;
 };
 
 // Derived class for customer accounts
-class CustomerAccount : public Account {
+class CustomerAccount : public Account
+{
     double balance;
-public:
 
-// Constructor to initialize username, password, expenditure, and balance
-    CustomerAccount(const string& username, const string& password, int expenditure = 0, int balance =0) : Account(username, password, expenditure) {
-        this->balance = balance;
-    }
+public:
+    // Constructor to initialize username, password, expenditure, and balance
+    CustomerAccount(const string &username, const string &password, int expenditure = 0, int balance = 0) : Account(username, password, expenditure), balance(balance) {}
     // Overrides the getAccountType() method from the base class Account
-    string getAccountType() const override {
-        return "User";
-    }
-    double getBalance() const {
-        return balance;
-    }
-    void updateBalance(double amount) {
-        balance += amount;
-    }
+    string getAccountType() const override {return "User";}
+    double getBalance() const {return balance;}
+    void updateBalance(double amount) {balance += amount;}
 };
 
 // Derived class for merchant accounts
-class MerchantAccount : public Account {
+class MerchantAccount : public Account
+{
 
 public:
     // Constructor to initialize username and password
-    MerchantAccount(const string& username, const string& password) : Account(username, password) {}
+    MerchantAccount(const string &username, const string &password) : Account(username, password) {}
 
     // Overrides the getAccountType() method from the base class Account
-    string getAccountType() const override {
-        return "Seller";
-    }
+    string getAccountType() const override {return "Seller";}
 
     // Iterates through the provided vector of accounts, checks if each account is a CustomerAccount,
     // and prints the username & balance (non-zero)
-    void viewUsersWithBalances(const vector<Account*>& accounts) {
+    void viewUsersWithBalances(const vector<Account *> &accounts)
+    {
         cout << "Users with balances:" << endl;
-        for (const auto& acc : accounts) {
-            if (dynamic_cast<CustomerAccount*>(acc)) {
-                cout << "Username: " << username << ", Balance: " << static_cast<CustomerAccount*>(acc)->getBalance() << endl;
+        for (const auto &acc : accounts)
+        {
+            if (dynamic_cast<CustomerAccount *>(acc))
+            {
+                cout << "Username: " << username << ", Balance: " << static_cast<CustomerAccount *>(acc)->getBalance() << endl;
             }
         }
     }
@@ -88,296 +78,277 @@ public:
 
 class Product
 {
-    private:
-        int id;
-        string name;
-        string category;
-        double price;
-        int quantity;
-        int sales;
+private:
+    int id;
+    string name;
+    string category;
+    double price;
+    int quantity;
+    int sales;
 
-    public:
+public:
     // Operator overloading to compare products
-        bool operator<(const Product& other) const {
-            return sales * price < other.sales * other.price;
-        } //ANCHOR - for priority queue
-        int getTotalSales() const{
-            return sales;
-        }
+    bool operator<(const Product &other) const
+    {
+        return sales * price < other.sales * other.price;
+    } // ANCHOR - for priority queue
+    int getTotalSales() const {return sales;}
 
-        // Increases the total sales of the product by the specified quantity
-        void addSales(int quantity)
-        {
-            this->sales+=quantity;
-        }
+    // Increases the total sales of the product by the specified quantity
+    void addSales(int quantity)
+    {
+        this->sales += quantity;
+    }
 
-        // Constructor to initialize product details
-        Product(int id, string name, string category, double price, int quantity, int sales=0)
-        {
-            this->id=id;
-            this->name=name;
-            this->category=category;
-            this->price=price;
-            this->quantity=quantity;
-            this->sales=sales;
-        }
+    // Constructor to initialize product details with using initializer list
+    Product(int id, string name, string category, double price, int quantity, int sales = 0) : id(id), name(name), category(category), price(price), quantity(quantity), sales(sales) {}
 
-        // Accesors for product details
-        int getId() const{
-            return id;
-        }
-
-        void setId(int id){
-            this->id=id;
-        }
-
-        string getName() const{
-            return name;
-        }
-
-        void setName(string name){
-            this->name=name;
-        }
-
-        string getCategory() const{
-            return category;
-        }
-
-        void setCategory(string category){
-            this->category=category;
-        }
-
-        double getPrice() const{
-            return price;
-        }
-
-        void setPrice(double price){
-            this->price=price;
-        }
-
-        int getQuantity() const{
-            return quantity;
-        }
-
-        void setQuantity(int quantity){
-            this->quantity=quantity;
-        }
+    // Accesors for product details
+    int getId() const {return id;}
+    void setId(int id) {this->id = id;}
+    string getName() const {return name;}
+    void setName(string name) {this->name = name;}
+    string getCategory() const {return category;}
+    void setCategory(string category) {this->category = category;}
+    double getPrice() const {return price;}
+    void setPrice(double price) {this->price = price;}
+    int getQuantity() const {return quantity;}
+    void setQuantity(int quantity) {this->quantity = quantity;}
 };
 
 class Inventory
 {
-    private:
-        vector<Product> products; // Vector to store products
+private:
+    vector<Product> products; // Vector to store products
 
-    public:
-        
-
-        void printAllProducts() const{
-            for(auto i=products.begin();i!=products.end();i++)
-            {
-                cout<<"ID : "<<i->getId()<<endl;
-                cout<<"Name : "<<i->getName()<<endl;
-                cout<<"Category : "<<i->getCategory()<<endl;
-                cout<<"Price : ₹"<<i->getPrice()<<endl;
-                cout<<"Quantity : "<<i->getQuantity()<<endl << endl;
-            }
-        }
-
-        void addProduct(Product product)
+public:
+    void printAllProducts() const
+    {
+        for (const auto &product : products)
         {
-            // Check if the product ID already exists using binary search
-            Product* found = findProduct(product.getId());
-            if (found != nullptr)
+            cout << "ID : " << product.getId() << endl;
+            cout << "Name : " << product.getName() << endl;
+            cout << "Category : " << product.getCategory() << endl;
+            cout << "Price : ₹" << product.getPrice() << endl;
+            cout << "Quantity : " << product.getQuantity() << endl;
+        }
+    }
+
+    void addProduct(Product product)
+    {
+        // Check if the product ID already exists using binary search
+        Product *found = findProduct(product.getId());
+        if (found != nullptr)
+        {
+            cout << "Id already exists." << endl;
+            cout << "-----------------------------------------------------------" << endl;
+        }
+        else
+        {
+            // Insert the new product at the back of the products vector
+            products.push_back(product);
+            cout << "Product added successfully." << endl;
+            cout << "-----------------------------------------------------------" << endl;
+        }
+    }
+
+    // Method to retrieve a copy of the products and return a vector containing all the products
+    vector<Product> getProducts() const
+    {
+        return products;
+    }
+
+    // Method to remove a product from inventory
+    void removeProduct(int id)
+    {
+        Product *found = findProduct(id);
+        if (found != nullptr)
+        {
+            auto index = found - &products[0]; // Calculate the index of the found product
+                                               // Auto deduces type from expression, over here it's assigning int
+
+            products.erase(products.begin() + index); // Erases the product from 'products' vector at calculated index
+                                                      // Uses products.begin() to get the iterator to the first element
+            cout << "Product removed successfully." << endl;
+            cout << "-----------------------------------------------------------" << endl;
+        }
+        else
+        {
+            cout << "Id does not exist" << endl;
+        }
+    }
+
+    Product *findProduct(int id) // Function to find a product by its ID
+    {
+        int low = 0;
+        int high = products.size() - 1;
+        while (low <= high) // Perform binary search until the low index is less than or equal to the high index
+        {
+            int mid = low + (high - low) / 2;
+            if (products[mid].getId() == id)
             {
-                cout << "Id already exists." << endl;
-                cout << "-----------------------------------------------------------" <<endl;
+                return &products[mid]; // Return a pointer to the product found
+            }
+            else if (products[mid].getId() < id)
+            {
+                low = mid + 1; // Update the low index to search the right half of the current range
             }
             else
             {
-                // Insert the new product at the back of the products vector
-                products.push_back(product);
-                cout << "Product added successfully." << endl;
-                cout << "-----------------------------------------------------------" <<endl;
+                high = mid - 1; // Update the high index to search the left half of the current range
             }
         }
+        return nullptr; // If the loop exits without finding the target ID,
+                        // return nullptr indicating that the product was not found
+    }
 
-         // Method to retrieve a copy of the products and return a vector containing all the products
-        vector<Product> getProducts() const 
+    // Updates product details if found by ID
+    void updateProduct(int id, string name, string category, double price, int quantity)
+    {
+        bool found = false;
+        for (auto &product : products) // Optimised this loop
         {
-            return products;
-        }
-
-        // Method to remove a product from inventory
-        void removeProduct(int id)
-        {
-            Product* found = findProduct(id);
-            if (found != nullptr)
+            if (product.getId() == id)
             {
-                auto index = found - &products[0];  // Calculate the index of the found product 
-                                                    //Auto deduces type from expression, over here it's assigning int
-                                                    
-                products.erase(products.begin() + index); // Erases the product from 'products' vector at calculated index
-                                                          //Uses products.begin() to get the iterator to the first element
-                cout << "Product removed successfully." << endl;        
-                cout << "-----------------------------------------------------------" <<endl;
-            }
-            else
-            {
-                cout << "Id does not exist" << endl;
+                product.setName(name);
+                product.setCategory(category);
+                product.setPrice(price);
+                product.setQuantity(quantity);
+                found = true;
+                break;
             }
         }
-
-        Product* findProduct(int id)  // Function to find a product by its ID
+        if (!found)
         {
-            int low = 0;
-            int high = products.size() - 1;
-            while (low <= high)  // Perform binary search until the low index is less than or equal to the high index
-            {
-                int mid = low + (high - low) / 2;
-                if (products[mid].getId() == id)
-                {
-                    return &products[mid]; // Return a pointer to the product found
-                }
-                else if (products[mid].getId() < id)
-                {
-                    low = mid + 1;  // Update the low index to search the right half of the current range
-                }
-                else
-                {
-                    high = mid - 1; // Update the high index to search the left half of the current range
-                }
-            }
-            return nullptr; // If the loop exits without finding the target ID, 
-                            //return nullptr indicating that the product was not found
+            cout << "ID does not exist." << endl;
+        }
+    }
+
+    // Saves inventory data to a file
+    void saveInventoryToFile(string filename)
+    {
+        ofstream file;
+        file.open(filename, ios::out | ios::trunc);
+        for (const auto &p : products) // Optimised this loop
+        {
+            file << p.getId() << "," << p.getName() << "," << p.getCategory() << "," << p.getPrice() << "," << p.getQuantity() << "," << p.getTotalSales() << endl;
         }
 
-        // Updates product details if found by ID
-        void updateProduct(int id, string name, string category, double price, int quantity)
-        {
-            bool found = false;
-            for (auto i = products.begin(); i != products.end(); i++)
-            {
-                if (i->getId() == id)
-                {
-                    i->setName(name);
-                    i->setCategory(category);
-                    i->setPrice(price);
-                    i->setQuantity(quantity);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found)
-            {
-                cout << "ID does not exist." << endl;
-            }
-        }        
+        file.close();
+    }
 
-        // Saves inventory data to a file
-        void saveInventoryToFile(string filename) 
+    // Loads inventory data from a file
+    void loadInventoryFromFile(string filename)
+    {
+        ifstream file; // Declare an input file stream object
+        file.open(filename);
+
+        if (file.is_open())
         {
-            ofstream file;
-            file.open(filename, ios::out | ios::trunc);
-            for (int i = 0; i < products.size(); i++) 
+            string line;
+            while (getline(file, line))
             {
-                Product p = products[i];
-                file << p.getId() << "," << p.getName() << "," << p.getCategory() << "," << p.getPrice() << "," << p.getQuantity()<< ","<< p.getTotalSales() << endl;
+                stringstream ss(line);                                         // Create a stringstream object to parse the line
+                string idStr, name, category, priceStr, quantityStr, salesStr; // Declare string variables to store data fields
+                // Extract data fields from the stringstream separated by commas
+                getline(ss, idStr, ',');
+                getline(ss, name, ',');
+                getline(ss, category, ',');
+                getline(ss, priceStr, ',');
+                getline(ss, quantityStr, ',');
+                getline(ss, salesStr, ',');
+
+                // Convert string data fields to their respective data types
+                int id = stoi(idStr);          // stoi = string to int
+                double price = stod(priceStr); // stod = string to double
+                int quantity = stoi(quantityStr);
+                int sales = stoi(salesStr);
+
+                // Create a Product object using the extracted data
+                Product p(id, name, category, price, quantity, sales);
+                // Add the Product object to the products vector
+                products.push_back(p);
             }
+
             file.close();
         }
-
-        // Loads inventory data from a file
-        void loadInventoryFromFile(string filename) 
+        else
         {
-            ifstream file; // Declare an input file stream object
-            file.open(filename);
-
-            if (file.is_open()) 
-            {
-                string line;
-                while (getline(file, line)) 
-                {
-                    stringstream ss(line); // Create a stringstream object to parse the line
-                    string idStr, name, category, priceStr, quantityStr, salesStr; // Declare string variables to store data fields
-                    // Extract data fields from the stringstream separated by commas 
-                    getline(ss, idStr, ',');
-                    getline(ss, name, ',');
-                    getline(ss, category, ',');
-                    getline(ss, priceStr, ',');
-                    getline(ss, quantityStr, ',');
-                    getline(ss, salesStr, ',');
-
-                    // Convert string data fields to their respective data types
-                    int id = stoi(idStr); //stoi = string to int
-                    double price = stod(priceStr); //stod = string to double
-                    int quantity = stoi(quantityStr);
-                    int sales = stoi(salesStr);
-
-                    // Create a Product object using the extracted data
-                    Product p(id, name, category, price, quantity, sales);
-                    // Add the Product object to the products vector
-                    products.push_back(p);
-                }
-
-                file.close();
-            } else {
-                cout << "Error: Could not open file " << filename << endl;
-            }
+            cout << "Error: Could not open file " << filename << endl;
         }
+    }
 };
 
 // Function to compare accounts based on expenditure
-bool compareAccounts(const Account* a1, const Account* a2) {
+bool compareAccounts(const Account *a1, const Account *a2)
+{
     return a1->expenditure < a2->expenditure;
 }
 
-class Store {
+class Store
+{
 private:
     Inventory inventory;
-    vector<Account*> accounts;
-    Account* loggedInAccount = nullptr;
+    vector<Account *> accounts;
+    Account *loggedInAccount = nullptr;
     // caesar cipher
-    void encrypt(string& str) {
+    void encrypt(string &str)
+    {
         int key = 3; // the key
-        for (char& c : str) {
-            if (isalpha(c)) {
-                c = ((c - 'a' + key) % 26) + 'a'; 
-            } else if (isupper(c)) {
-                c = ((c - 'A' + key) % 26) + 'A'; 
+        for (char &c : str)
+        {
+            if (isalpha(c))
+            {
+                c = ((c - 'a' + key) % 26) + 'a';
+            }
+            else if (isupper(c))
+            {
+                c = ((c - 'A' + key) % 26) + 'A';
             }
         }
     }
-    void decrypt(string& str) {
+    void decrypt(string &str)
+    {
         int key = 3; // You should use the same key that you used for encryption
-        for (char& c : str) {
-            if (isalpha(c)) {
-                if (islower(c)) {
+        for (char &c : str)
+        {
+            if (isalpha(c))
+            {
+                if (islower(c))
+                {
                     c = (((c - 'a' - key) % 26 + 26) % 26) + 'a'; // Decrypt lowercase letters
-                } else {
+                }
+                else
+                {
                     c = (((c - 'A' - key) % 26 + 26) % 26) + 'A'; // Decrypt uppercase letters
                 }
             }
         }
     }
 
-    Account* login() {
+    Account *login()
+    {
         string username, password;
         cout << "Enter username: ";
         cin >> username;
         cout << "Enter password: ";
         cin >> password;
 
-        for (Account* acc : accounts) {
-            if (acc->authenticate(username, password)) {
+        for (Account *acc : accounts)
+        {
+            if (acc->authenticate(username, password))
+            {
                 cout << "Login successful. Welcome, " << username << " (" << acc->getAccountType() << ")" << endl;
                 return acc;
             }
         }
+
         cout << "Login failed. Invalid username or password." << endl;
         return nullptr;
     }
 
-    void createUser() {
+    void createUser()
+    {
         string username, password;
         cout << "Enter username: ";
         cin >> username;
@@ -388,18 +359,25 @@ private:
         cout << "User account created successfully." << endl;
     }
 
-    void stockAlert() // TODO
+    void stockAlert()   // Optimised loop
     {
-        for(auto i=inventory.getProducts().begin();i!=inventory.getProducts().end();i++)
+        bool alert = false;
+        for (const auto &product : inventory.getProducts())
         {
-            if(i->getQuantity() <= 4)
+            if (product.getQuantity() <= 4)
             {
-                cout<<"Stock Empty Alert! for product : "<< i->getName() << "With product quantity" << i->getQuantity() <<endl;
+                cout << "Stock Empty Alert! for product: " << product.getName() << " with product quantity: " << product.getQuantity() << endl;
+                alert = true;
             }
         }
-        cout << "Stock Empty Alert!" << endl;
+        if (!alert)
+        {
+            cout << "No products with low stock." << endl;
+        }
     }
-    void createSeller() {
+
+    void createSeller()
+    {
         string username, password;
         cout << "Enter username: ";
         cin >> username;
@@ -410,11 +388,13 @@ private:
         cout << "Seller account created successfully." << endl;
     }
 
-    void saveToFile() {
+    void saveToFile()
+    {
         ofstream file;
         file.open("users.csv");
 
-        for (const auto& acc : accounts) {
+        for (const auto &acc : accounts)
+        {
             string a = acc->getAccountType();
             string b = acc->getUsername();
             string c = acc->getPassword();
@@ -433,13 +413,16 @@ private:
         file.close();
     }
 
-    void loadFromFile() {
+    void loadFromFile()
+    {
         ifstream file;
         file.open("users.csv");
 
-        if (file.is_open()) {
+        if (file.is_open())
+        {
             string line;
-            while (getline(file, line)) {
+            while (getline(file, line))
+            {
                 stringstream ss(line);
                 string type, username, password, exp, bal;
                 getline(ss, type, ',');
@@ -456,31 +439,39 @@ private:
                 expenditure = expenditure - 1029;
                 balance = balance - 1029;
 
-                if (type == "User") {
+                if (type == "User")
+                {
                     accounts.push_back(new CustomerAccount(username, password, expenditure, balance));
-                } else if (type == "Seller") {
+                }
+                else if (type == "Seller")
+                {
                     accounts.push_back(new MerchantAccount(username, password));
                 }
             }
 
             file.close();
-        } else {
+        }
+        else
+        {
             cout << "Error: Could not open file accounts.txt" << endl;
         }
     }
 
 public:
-
-    void printAccounts(){
-        for(Account* each : accounts){
+    void printAccounts()
+    {
+        for (Account *each : accounts)
+        {
             cout << each->getUsername() << endl;
             cout << each->getPassword() << endl;
         }
     }
-    Inventory getInventory() const {
+    Inventory getInventory() const
+    {
         return inventory;
     }
-    Store() {
+    Store()
+    {
         // create some default accounts for testing, removed from here
         inventory.loadInventoryFromFile("inventory.csv");
     }
@@ -488,82 +479,13 @@ public:
     {
         loadFromFile();
     }
-    void makeAPurchase(){
-        cout<< "_____________________________________________________" << endl;
-        inventory.printAllProducts();
-        if (loggedInAccount && loggedInAccount->getAccountType() == "User") {
-            double total = 0;
-            char choice;
-            do {
-                int id;
-                cout << "Enter product id: ";
-                cin >> id;
-                Product* product = inventory.findProduct(id);
-                int quantity;
-                if (!product) {
-                    cout << "Product not found." << endl;
-                    cout << "-----------------------------------------------------------" <<endl;
-                    continue;
-                }
-                cout << "Enter quantity: ";
-                cin >> quantity;
-                while(quantity<=0 || quantity > product->getQuantity())
-                {
-                    cout << "Enter quantity in the range of 1 to " << product->getQuantity() << ": (_Enter Q to quit_)\n";
-                    cin >> quantity;
-                }
-                
-                total += product->getPrice() * quantity;
 
-                if(loggedInAccount->getBalance() < total)  // When user has insufficient balance
-                {
-                    cout << "Insufficient Balance! Retry" << endl;
-                    cout << "-----------------------------------------------------------" <<endl;
-                    this->run();
-                }
-                cout << "Do you want to add more products to cart? (Y/N): ";
-                product->setQuantity(product->getQuantity()-quantity);  //updating the inventory product quantity
-                product->addSales(quantity); //updating the sales of the product
-                cin >> choice;
-            } while (choice == 'Y' || choice == 'y');
-            cout << "Total amount: ₹" << total << endl<< "Transaction Completed!" << endl;
-            if (total > 0) {
-                static_cast<CustomerAccount*>(loggedInAccount)->updateBalance(-total);
-                loggedInAccount->expenditure += total;
-            }
-            inventory.saveInventoryToFile("inventory.csv");
-        } else {
-            cout << "You need to be logged in as a user to make a purchase." << endl;
-            cout << "-----------------------------------------------------------" <<endl;
-        }
-    }
-    void printHighestSpending(){
-        // CAN't do variable declaration in switch case
-        printHighestSpending();
-        cout << "-----------------------------------------------------------" <<endl;
-        cout << "\nList of highest spending users in descending order:" << endl;
-
-        // priority_queue<Account*, vector<Account*>, comparator> pq; //ANCHOR - This uses class or functor
-        priority_queue<Account*, vector<Account*>, decltype(compareAccounts)*> pq(compareAccounts);  // this uses function pointer
-        for (const auto& acc : accounts) {
-            pq.push(acc);
-        }
-        int i = 9;
-        cout << "Top 10 highest spending users:" << endl;
-
-        while (i && !pq.empty()) {
-            Account* acc = pq.top();
-            pq.pop();
-            cout << "Username: " << acc->getUsername() << ", Expenditure: " << acc->expenditure << endl;
-            i--;
-        }
-        cout << "-----------------------------------------------------------" <<endl;
-    }
-
-    void run() {
+    void run()
+    {
         char choice;
-        do {
-            cout << "-----------------------------------------------------------" <<endl;
+        do
+        {
+            cout << "-----------------------------------------------------------" << endl;
             cout << "Please choose an option:" << endl;
             cout << "1. Login" << endl;
             cout << "2. Create User Account" << endl;
@@ -576,7 +498,8 @@ public:
             cout << "Q. Quit" << endl;
             cin >> choice;
 
-            switch (choice) {
+            switch (choice)
+            {
             case '1':
                 loggedInAccount = login();
                 break;
@@ -587,40 +510,121 @@ public:
                 createSeller();
                 break;
             case '4':
-                if (loggedInAccount && loggedInAccount->getAccountType() == "User") {
+                if (loggedInAccount && loggedInAccount->getAccountType() == "User")
+                {
                     double amount;
-                    cout << "-----------------------------------------------------------" <<endl;
+                    cout << "-----------------------------------------------------------" << endl;
+
                     cout << "Enter amount to update balance: ";
                     cin >> amount;
-                    static_cast<CustomerAccount*>(loggedInAccount)->updateBalance(amount);
+                    static_cast<CustomerAccount *>(loggedInAccount)->updateBalance(amount);
                     cout << "Balance updated successfully." << endl;
-                } else {
+                }
+                else
+                {
                     cout << "You need to be logged in as a user to update balance." << endl;
-                    cout << "-----------------------------------------------------------" <<endl;
+                    cout << "-----------------------------------------------------------" << endl;
                 }
                 break;
             case '5':
-                if (loggedInAccount && loggedInAccount->getAccountType() == "Seller") {
-                    static_cast<MerchantAccount*>(loggedInAccount)->viewUsersWithBalances(accounts);
-                } else {
+                if (loggedInAccount && loggedInAccount->getAccountType() == "Seller")
+                {
+                    static_cast<MerchantAccount *>(loggedInAccount)->viewUsersWithBalances(accounts);
+                }
+                else
+                {
                     cout << "You need to be logged in as a seller to view users with balances." << endl;
-                    cout << "-----------------------------------------------------------" <<endl;
-
+                    cout << "-----------------------------------------------------------" << endl;
                 }
                 break;
-            case '6':{
-                makeAPurchase();
-                break;}
+            case '6':
+            {
+                cout << "_____________________________________________________" << endl;
+                inventory.printAllProducts();
+                if (loggedInAccount && loggedInAccount->getAccountType() == "User")
+                {
+                    double total = 0;
+                    char choice;
+                    do
+                    {
+                        int id;
+                        cout << "Enter product id: ";
+                        cin >> id;
+                        Product *product = inventory.findProduct(id);
+                        int quantity;
+                        if (!product)
+                        {
+                            cout << "Product not found." << endl;
+                            cout << "-----------------------------------------------------------" << endl;
+                            continue;
+                        }
+                        cout << "Enter quantity: ";
+                        cin >> quantity;
+                        while (quantity <= 0 || quantity > product->getQuantity())
+                        {
+                            cout << "Enter quantity in the range of 1 to " << product->getQuantity() << ": (_Enter Q to quit_)\n";
+                            cin >> quantity;
+                        }
+
+                        total += product->getPrice() * quantity;
+
+                        if (loggedInAccount->getBalance() < total) // When user has insufficient balance
+                        {
+                            cout << "Insufficient Balance! Retry" << endl;
+                            cout << "-----------------------------------------------------------" << endl;
+                            this->run();
+                        }
+                        cout << "Do you want to add more products to cart? (Y/N): ";
+                        product->setQuantity(product->getQuantity() - quantity); // updating the inventory product quantity
+                        product->addSales(quantity);                             // updating the sales of the product
+                        cin >> choice;
+                    } while (choice == 'Y' || choice == 'y');
+                    cout << "Total amount: ₹" << total << endl
+                         << "Transaction Completed!" << endl;
+                    if (total > 0)
+                    {
+                        static_cast<CustomerAccount *>(loggedInAccount)->updateBalance(-total);
+                        loggedInAccount->expenditure += total;
+                    }
+                    inventory.saveInventoryToFile("inventory.csv");
+                }
+                else
+                {
+                    cout << "You need to be logged in as a user to make a purchase." << endl;
+                    cout << "-----------------------------------------------------------" << endl;
+                }
+                break;
+            }
 
             case '7':
                 stockAlert();
                 break;
 
-            case '8': { // CAN't do variable declaration in switch case
-                printHighestSpending();
+            case '8':
+            { // CAN't do variable declaration in switch case
+                cout << "-----------------------------------------------------------" << endl;
+                cout << "\nList of highest spending users in descending order:" << endl;
+
+                // priority_queue<Account*, vector<Account*>, comparator> pq; //ANCHOR - This uses class or functor
+                priority_queue<Account *, vector<Account *>, decltype(compareAccounts) *> pq(compareAccounts); // this uses function pointer
+                for (const auto &acc : accounts)
+                {
+                    pq.push(acc);
+                }
+                int i = 9;
+                cout << "Top 10 highest spending users:" << endl;
+
+                while (i && !pq.empty())
+                {
+                    Account *acc = pq.top();
+                    pq.pop();
+                    cout << "Username: " << acc->getUsername() << ", Expenditure: " << acc->expenditure << endl;
+                    i--;
+                }
+                cout << "-----------------------------------------------------------" << endl;
                 break;
             }
-            
+
             case 'Q':
                 cout << "Goodbye!" << endl;
                 saveToFile();
@@ -631,15 +635,32 @@ public:
             }
         } while (true);
     }
+};
 
-    void runInv(){
+int main()
+{
+    system("\x1b[32m");
 
-        cout << "-----------------------------------------------------------" <<endl;
-        cout << "---------------Inventory Management System ----------------" <<endl;  
-        cout << "------------------------- Welcome! ------------------------" <<endl;
-        cout << "-----------------------------------------------------------" <<endl;
+    int option;
+    Store store; // solved the instantiation problem
+    store.Load();
+
+    Inventory inventory = store.getInventory();
+    cout << "Enter 1 if you want to enter accounts and 0 if you want to enter inventory: ";
+    cin >> option;
+    if (option == 1)
+    {
+        store.run();
+    }
+    else
+    {
+        cout << "-----------------------------------------------------------" << endl;
+        cout << "---------------Inventory Management System ----------------" << endl;
+        cout << "------------------------- Welcome! ------------------------" << endl;
+        cout << "-----------------------------------------------------------" << endl;
         char choice;
-        do {
+        do
+        {
             cout << "Please choose an option:" << endl;
             cout << "1. Add a product" << endl;
             cout << "2. Remove a product" << endl;
@@ -653,8 +674,10 @@ public:
             cout << "q. Quit, And go to Accounts Screen" << endl;
             cin >> choice;
 
-            switch (choice) {
-            case '1': {
+            switch (choice)
+            {
+            case '1':
+            {
                 int id;
                 string name, category;
                 double price;
@@ -674,7 +697,8 @@ public:
                 break;
             }
 
-            case '2': {
+            case '2':
+            {
                 int id;
                 cout << "Enter product id: ";
                 cin >> id;
@@ -682,26 +706,30 @@ public:
                 break;
             }
 
-            case '3': {
+            case '3':
+            {
                 int id;
                 cout << "Enter product id: ";
                 cin >> id;
-                Product* product = inventory.findProduct(id);
-                if (product) {
+                Product *product = inventory.findProduct(id);
+                if (product)
+                {
                     cout << "Name: " << product->getName() << endl;
                     cout << "Category: " << product->getCategory() << endl;
                     cout << "Price: ₹ " << product->getPrice() << endl;
                     cout << "Quantity: " << product->getQuantity() << endl;
-                    cout << "-----------------------------------------------------------" <<endl;
+                    cout << "-----------------------------------------------------------" << endl;
                 }
-                else {
+                else
+                {
                     cout << "Product not found." << endl;
-                    cout << "-----------------------------------------------------------" <<endl;
+                    cout << "-----------------------------------------------------------" << endl;
                 }
                 break;
             }
 
-            case '4': {
+            case '4':
+            {
                 int id;
                 string name, category;
                 double price;
@@ -718,77 +746,65 @@ public:
                 cin >> quantity;
                 inventory.updateProduct(id, name, category, price, quantity);
                 cout << "Product updated successfully." << endl;
-                cout << "-----------------------------------------------------------" <<endl;
+                cout << "-----------------------------------------------------------" << endl;
                 break;
             }
-            case '5': {
+            case '5':
+            {
                 inventory.printAllProducts();
                 break;
             }
-            case '6': {
+            case '6':
+            {
                 inventory.saveInventoryToFile("inventory.csv");
                 cout << "Inventory saved to file." << endl;
-                cout << "-----------------------------------------------------------" <<endl;
+                cout << "-----------------------------------------------------------" << endl;
                 break;
             }
-            case '7': {
+            case '7':
+            {
                 inventory.loadInventoryFromFile("inventory.csv");
                 cout << "Inventory loaded from file." << endl;
-                cout << "-----------------------------------------------------------" <<endl;
+                cout << "-----------------------------------------------------------" << endl;
                 break;
             }
-            case '8': { // CAN't do variable declaration in switch case
-                    
-                    priority_queue<Product> pq;
-                    for (const auto& p : inventory.getProducts()) {
-                        pq.push(p);
-                    }
-                    int i = 9;
-                    cout << "Top 10 highest selling products:" << endl;
-                    while (i) {
-                        Product p = pq.top();
-                        pq.pop();
-                        cout << "Product Name: " << p.getName() << ", Sales: " << p.getTotalSales() << endl;
-                        i--;
-                    }
-                    break;
+            case '8':
+            { // CAN't do variable declaration in switch case
+
+                priority_queue<Product> pq;
+                for (const auto &p : inventory.getProducts())
+                {
+                    pq.push(p);
                 }
+                int i = 9;
+                cout << "Top 10 highest selling products:" << endl;
+                while (i)
+                {
+                    Product p = pq.top();
+                    pq.pop();
+                    cout << "Product Name: " << p.getName() << ", Sales: " << p.getTotalSales() << endl;
+                    i--;
+                }
+                break;
+            }
 
             case 'Q':
                 cout << "Goodbye!" << endl;
                 inventory.saveInventoryToFile("inventory.csv");
-                cout << "-----------------------------------------------------------" <<endl;
+                cout << "-----------------------------------------------------------" << endl;
+                return 0;
             case 'q':
                 cout << "Welcome to Accounts!" << endl;
                 inventory.saveInventoryToFile("inventory.csv");
-                run();
-                cout << "-----------------------------------------------------------" <<endl;
+                store.run();
+                cout << "-----------------------------------------------------------" << endl;
+                return 0;
             default:
                 cout << "Invalid Choice. Please Try again" << endl;
-                cout << "-----------------------------------------------------------" <<endl;
+                cout << "-----------------------------------------------------------" << endl;
                 break;
             }
         } while (true);
-    }
-};
-
-int main() {
-    system("\x1b[32m");
-
-    int option;
-    Store store; // solved the instantiation problem
-    store.Load();
-    
-    Inventory inventory = store.getInventory();
-    cout << "Enter 1 if you want to enter accounts and 0 if you want to enter inventory: ";
-    cin >> option;
-    if(option==1)
-    {
-        store.run();
-    }
-    else
-    {
-        store.runInv();
     }
     return 0;
 }
