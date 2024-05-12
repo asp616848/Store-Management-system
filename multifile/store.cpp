@@ -1,24 +1,29 @@
 #include "store.hpp"
 #include <iostream>
-#include <queue>
+#include <queue> // priority queue
 using namespace std;
+
+// Function to compare accounts by expenditure
 bool compareAccounts(const Account *a1, const Account *a2)
 {
     return a1->expenditure < a2->expenditure;
 }
+
+// Function to encrypt a string using Caesar cipher with key 3
 void Store::encrypt(string &str) {
     int key = 3;
-    for (char &c : str) {
-        if (isalpha(c)) {
-            if (islower(c)) {
-                c = ((c - 'a' + key) % 26) + 'a';
+    for (char &c : str) { // Loop through each character of the string
+        if (isalpha(c)) { // Check if the character is an alphabet
+            if (islower(c)) { // If lowercase
+                c = ((c - 'a' + key) % 26) + 'a'; // Encrypt lowercase character
             } else if (isupper(c)) {
-                c = ((c - 'A' + key) % 26) + 'A';
+                c = ((c - 'A' + key) % 26) + 'A'; // Encrypt uppercase character
             }
         }
     }
 }
 
+// Function to decrypt a string encrypted with Caesar cipher key 3
 void Store::decrypt(string &str) {
     int key = 3;
     for (char &c : str) {
@@ -32,25 +37,27 @@ void Store::decrypt(string &str) {
     }
 }
 
+// Function to handle user login
 Account *Store::login() {
     string username, password;
     cin.ignore();
-    cout << "Enter username: ";
-    getline(cin, username);
+    cout << "Enter username: "; 
+    getline(cin, username); // Get username from user input
     cout << "Enter password: ";
-    getline(cin, password);
+    getline(cin, password); // Get password from user input
 
-    for (Account *acc : accounts) {
-        if (acc->authenticate(username, password)) {
+    for (Account *acc : accounts) { // Iterate through existing accounts
+        if (acc->authenticate(username, password)) { // If authentication succeeds (username & pwd match stored username & pwd)
             cout << "Login successful. Welcome, " << username << " (" << acc->getAccountType() << ")" << endl;
             return acc;
         }
     }
 
     cout << "Login failed. Invalid username or password." << endl;
-    return nullptr;
+    return nullptr; // Return null pointer if login fails
 }
 
+// Function to create a new user account
 void Store::createUser() {
 
     string username, password;
@@ -59,23 +66,25 @@ void Store::createUser() {
     getline(cin, username);
     cout << "Enter password: ";
     getline(cin, password);
-    accounts.push_back(new CustomerAccount(username, password));
+    accounts.push_back(new CustomerAccount(username, password)); // Create new CustomerAccount object and add it to accounts vector
     cout << "User account created successfully." << endl;
 }
 
+// Function to check stock levels and issue alerts for low stock
 void Store::stockAlert() {
-    bool alert = false;
-    for (const auto &product : inventory.getProducts()) {
-        if (product.getQuantity() <= 4) {
+    bool alert = false; // Flag to track if any low stock is found
+    for (const auto &product : inventory.getProducts()) { // Iterate through products in inventory
+        if (product.getQuantity() <= 4) { // If product quantity is less than or equal to 4
             cout << "Stock Empty Alert! for product: " << product.getName() << " with product quantity: " << product.getQuantity() << endl;
-            alert = true;
+            alert = true; // Set alert flag to true
         }
     }
-    if (!alert) {
+    if (!alert) { // If no low stock is found
         cout << "No products with low stock." << endl;
     }
 }
 
+// Function to create a new seller account
 void Store::createSeller() {
     string username, password;
     cout << "Enter username: ";
@@ -84,13 +93,14 @@ void Store::createSeller() {
     cout << "Enter password: ";
     getline(cin, password);
 
-    accounts.push_back(new MerchantAccount(username, password));
+    accounts.push_back(new MerchantAccount(username, password)); // Create new MerchantAccount object and add it to accounts vector
     cout << "Seller account created successfully." << endl;
 }
 
+// Function to save account details to file
 void Store::saveToFile() {
     ofstream file;
-    file.open("users.csv");
+    file.open("users.csv"); // Open file for writing
 
     for (const auto &acc : accounts) {
         string a = acc->getAccountType();
@@ -99,52 +109,53 @@ void Store::saveToFile() {
         double d = acc->expenditure;
         double e = acc->getBalance();
 
-        encrypt(a);
-        encrypt(b);
-        encrypt(c);
+        encrypt(a); // Encrypt account type
+        encrypt(b); // Encrypt username
+        encrypt(c); // Encrypt password
 
-        d = d + 1029;
-        e = e + 1029;
+        d = d + 1029; // Add a constant to expenditure
+        e = e + 1029; // Add a constant to balance
 
-        file << a << "," << b << "," << c << "," << d << "," << e << endl;
+        file << a << "," << b << "," << c << "," << d << "," << e << endl; // Write account details to file
     }
     file.close();
 }
 
+// Function to load account details from file
 void Store::loadFromFile() {
     ifstream file;
-    file.open("users.csv");
+    file.open("users.csv"); // Open file for reading
 
-    if (file.is_open()) {
+    if (file.is_open()) { // If file is opened successfully
         string line;
-        while (getline(file, line)) {
+        while (getline(file, line)) { // Read each line from file
             stringstream ss(line);
             string type, username, password, exp, bal;
-            getline(ss, type, ',');
-            getline(ss, username, ',');
-            getline(ss, password, ',');
-            getline(ss, exp, ',');
-            getline(ss, bal, ',');
-            double expenditure = stoi(exp);
+            getline(ss, type, ','); // Extract account type
+            getline(ss, username, ','); // Extract username
+            getline(ss, password, ','); // Extract password
+            getline(ss, exp, ','); // Extract expenditure
+            getline(ss, bal, ','); // Extract balance
+            double expenditure = stoi(exp); //Convert expenditure to int ; stoi = string to int
             double balance = stoi(bal);
 
             decrypt(type);
             decrypt(username);
             decrypt(password);
-            expenditure = expenditure - 1029;
-            balance = balance - 1029;
+            expenditure = expenditure - 1029; // Subtract constant from expenditure
+            balance = balance - 1029; // Subtract constant from expenditure
 
             if (type == "User") {
-                accounts.push_back(new CustomerAccount(username, password, expenditure, balance));
-            } else if (type == "Seller") {
-                accounts.push_back(new MerchantAccount(username, password));
+                accounts.push_back(new CustomerAccount(username, password, expenditure, balance)); // Create new CustomerAccount object
+            } else if (type == "Seller") { 
+                accounts.push_back(new MerchantAccount(username, password)); // Create new MerchantAccount object
             }
         }
-        if(accounts.size() == 0){
+        if(accounts.size() == 0){ // If no accounts are found
             cout << "No accounts found. (account.csv must be empty)" << endl;
         }
         file.close();
-    } else {
+    } else { // If file cannot be opened
         cout << "Error: Could not open file accounts.txt" << endl;
     }
 }
