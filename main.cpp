@@ -1,3 +1,4 @@
+// these are all the header files
 #include<iostream>
 #include<vector>
 #include<string>
@@ -8,14 +9,16 @@
 #include<algorithm>
 using namespace std;
 
+// Base class for accounts
 class Account {
 protected:
-    string username;
-    string password;
+    string username; 
+    string password; 
 public:
     static bool compareByExpenditure(const Account* a, const Account* b) {
         return a->expenditure < b->expenditure; // Use < for descending order
-    }
+    } //compares account by expenditure for the purpose of trend analysis to understand who spends most
+
     double expenditure =0;
     string getUsername() const {
         return username;
@@ -23,7 +26,11 @@ public:
     string getPassword() const {
         return password;
     }
+    // Constructor to initialize username, password, and expenditure
     Account(const string& username, const string& password, int expenditure = 0) : username(username), password(password), expenditure(expenditure) {}
+
+    // Virtual method to authenticate login credentials by comparing stored username 
+    //and password to the entered credentials
     virtual bool authenticate(const string& inputUsername, const string& inputPassword) const 
     {
         return username == inputUsername && password == inputPassword;
@@ -34,12 +41,16 @@ public:
     virtual string getAccountType() const = 0;
 };
 
+// Derived class for customer accounts
 class CustomerAccount : public Account {
     double balance;
 public:
+
+// Constructor to initialize username, password, expenditure, and balance
     CustomerAccount(const string& username, const string& password, int expenditure = 0, int balance =0) : Account(username, password, expenditure) {
         this->balance = balance;
     }
+    // Overrides the getAccountType() method from the base class Account
     string getAccountType() const override {
         return "User";
     }
@@ -51,13 +62,20 @@ public:
     }
 };
 
+// Derived class for merchant accounts
 class MerchantAccount : public Account {
+
 public:
+    // Constructor to initialize username and password
     MerchantAccount(const string& username, const string& password) : Account(username, password) {}
 
+    // Overrides the getAccountType() method from the base class Account
     string getAccountType() const override {
         return "Seller";
     }
+
+    // Iterates through the provided vector of accounts, checks if each account is a CustomerAccount,
+    // and prints the username & balance (non-zero)
     void viewUsersWithBalances(const vector<Account*>& accounts) {
         cout << "Users with balances:" << endl;
         for (const auto& acc : accounts) {
@@ -77,17 +95,23 @@ class Product
         double price;
         int quantity;
         int sales;
+
     public:
+    // Operator overloading to compare products
         bool operator<(const Product& other) const {
             return sales * price < other.sales * other.price;
         } //ANCHOR - for priority queue
         int getTotalSales() const{
             return sales;
         }
+
+        // Increases the total sales of the product by the specified quantity
         void addSales(int quantity)
         {
             this->sales+=quantity;
         }
+
+        // Constructor to initialize product details
         Product(int id, string name, string category, double price, int quantity, int sales=0)
         {
             this->id=id;
@@ -98,6 +122,7 @@ class Product
             this->sales=sales;
         }
 
+        // Accesors for product details
         int getId() const{
             return id;
         }
@@ -142,7 +167,7 @@ class Product
 class Inventory
 {
     private:
-        vector<Product> products;
+        vector<Product> products; // Vector to store products
 
     public:
         
@@ -169,25 +194,30 @@ class Inventory
             }
             else
             {
-                // Insert the product at the appropriate position to maintain sorted order
+                // Insert the new product at the back of the products vector
                 products.push_back(product);
                 cout << "Product added successfully." << endl;
                 cout << "-----------------------------------------------------------" <<endl;
             }
         }
 
-        vector<Product> getProducts() const // return the products but not modify them
+         // Method to retrieve a copy of the products and return a vector containing all the products
+        vector<Product> getProducts() const 
         {
             return products;
         }
 
+        // Method to remove a product from inventory
         void removeProduct(int id)
         {
             Product* found = findProduct(id);
             if (found != nullptr)
             {
-                auto index = found - &products[0]; // Calculate the index of the found product
-                products.erase(products.begin() + index); // Erase the product at the calculated index
+                auto index = found - &products[0];  // Calculate the index of the found product 
+                                                    //Auto deduces type from expression, over here it's assigning int
+                                                    
+                products.erase(products.begin() + index); // Erases the product from 'products' vector at calculated index
+                                                          //Uses products.begin() to get the iterator to the first element
                 cout << "Product removed successfully." << endl;        
                 cout << "-----------------------------------------------------------" <<endl;
             }
@@ -197,29 +227,31 @@ class Inventory
             }
         }
 
-        Product* findProduct(int id)  //removed search logic elsewhere and called this func
+        Product* findProduct(int id)  // Function to find a product by its ID
         {
             int low = 0;
             int high = products.size() - 1;
-            while (low <= high)
+            while (low <= high)  // Perform binary search until the low index is less than or equal to the high index
             {
                 int mid = low + (high - low) / 2;
                 if (products[mid].getId() == id)
                 {
-                    return &products[mid];
+                    return &products[mid]; // Return a pointer to the product found
                 }
                 else if (products[mid].getId() < id)
                 {
-                    low = mid + 1;
+                    low = mid + 1;  // Update the low index to search the right half of the current range
                 }
                 else
                 {
-                    high = mid - 1;
+                    high = mid - 1; // Update the high index to search the left half of the current range
                 }
             }
-            return nullptr;
+            return nullptr; // If the loop exits without finding the target ID, 
+                            //return nullptr indicating that the product was not found
         }
 
+        // Updates product details if found by ID
         void updateProduct(int id, string name, string category, double price, int quantity)
         {
             bool found = false;
@@ -241,6 +273,7 @@ class Inventory
             }
         }        
 
+        // Saves inventory data to a file
         void saveInventoryToFile(string filename) 
         {
             ofstream file;
@@ -253,9 +286,10 @@ class Inventory
             file.close();
         }
 
+        // Loads inventory data from a file
         void loadInventoryFromFile(string filename) 
         {
-            ifstream file;
+            ifstream file; // Declare an input file stream object
             file.open(filename);
 
             if (file.is_open()) 
@@ -263,8 +297,9 @@ class Inventory
                 string line;
                 while (getline(file, line)) 
                 {
-                    stringstream ss(line);
-                    string idStr, name, category, priceStr, quantityStr, salesStr;
+                    stringstream ss(line); // Create a stringstream object to parse the line
+                    string idStr, name, category, priceStr, quantityStr, salesStr; // Declare string variables to store data fields
+                    // Extract data fields from the stringstream separated by commas 
                     getline(ss, idStr, ',');
                     getline(ss, name, ',');
                     getline(ss, category, ',');
@@ -272,12 +307,15 @@ class Inventory
                     getline(ss, quantityStr, ',');
                     getline(ss, salesStr, ',');
 
-                    int id = stoi(idStr);
-                    double price = stod(priceStr);
+                    // Convert string data fields to their respective data types
+                    int id = stoi(idStr); //stoi = string to int
+                    double price = stod(priceStr); //stod = string to double
                     int quantity = stoi(quantityStr);
                     int sales = stoi(salesStr);
 
+                    // Create a Product object using the extracted data
                     Product p(id, name, category, price, quantity, sales);
+                    // Add the Product object to the products vector
                     products.push_back(p);
                 }
 
@@ -288,6 +326,7 @@ class Inventory
         }
 };
 
+// Function to compare accounts based on expenditure
 bool compareAccounts(const Account* a1, const Account* a2) {
     return a1->expenditure < a2->expenditure;
 }
