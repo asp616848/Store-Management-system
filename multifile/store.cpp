@@ -167,6 +167,7 @@ void Store::run() {
     char choice;
         do
         {
+            cout<< "Press ctrl + c to exit the program"<<endl;
             cout << "-----------------------------------------------------------" << endl;
             cout << "Please choose an option:" << endl;
             cout << "1. Login" << endl;
@@ -177,7 +178,8 @@ void Store::run() {
             cout << "6. Make a purchase (Customers Only)" << endl;
             cout << "7. Stock Alert" << endl;
             cout << "8. List of highest spending users" << endl;
-            cout << "Q. Quit" << endl;
+            cout << "Q. Quit and redirect to Inventory" << endl;
+            
             cin >> choice;
 
             switch (choice)
@@ -319,10 +321,14 @@ void Store::run() {
         while (true);
 }
 void Store::runInv(){
+    
     cout << "-----------------------------------------------------------" <<endl;
     cout << "---------------Inventory Management System ----------------" <<endl;  
     cout << "------------------------- Welcome! ------------------------" <<endl;
     cout << "-----------------------------------------------------------" <<endl;
+    cout<< "Press ctrl + c to exit the program"<<endl;
+
+    
     char choice;
     do {
         cout << "Please choose an option:" << endl;
