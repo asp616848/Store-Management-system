@@ -1,6 +1,11 @@
 #include "inventory.hpp"
 
 void Inventory::printAllProducts() const {
+    if(products.empty()) {
+        std::cout << "No products available. (inventory.csv must be empty)" << std::endl;
+        std::cout << "-----------------------------------------------------------" << std::endl;
+        return;
+    }
     for (const auto &product : products) {
         std::cout << "ID : " << product.getId() << std::endl;
         std::cout << "Name : " << product.getName() << std::endl;

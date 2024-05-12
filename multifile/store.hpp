@@ -24,11 +24,13 @@ private:
     void createSeller();
     void saveToFile();
     void loadFromFile();
-
+    
 public:
     void printAccounts();
     Inventory getInventory() const;
     Store();
+    void HighestSpendingUsers();
+    void MakeAPurchase();
     void Load();
     void run();
     void runInv();
