@@ -373,7 +373,6 @@ private:
                 return acc;
             }
         }
-
         cout << "Login failed. Invalid username or password." << endl;
         return nullptr;
     }
@@ -489,6 +488,77 @@ public:
     {
         loadFromFile();
     }
+    void makeAPurchase(){
+        cout<< "_____________________________________________________" << endl;
+        inventory.printAllProducts();
+        if (loggedInAccount && loggedInAccount->getAccountType() == "User") {
+            double total = 0;
+            char choice;
+            do {
+                int id;
+                cout << "Enter product id: ";
+                cin >> id;
+                Product* product = inventory.findProduct(id);
+                int quantity;
+                if (!product) {
+                    cout << "Product not found." << endl;
+                    cout << "-----------------------------------------------------------" <<endl;
+                    continue;
+                }
+                cout << "Enter quantity: ";
+                cin >> quantity;
+                while(quantity<=0 || quantity > product->getQuantity())
+                {
+                    cout << "Enter quantity in the range of 1 to " << product->getQuantity() << ": (_Enter Q to quit_)\n";
+                    cin >> quantity;
+                }
+                
+                total += product->getPrice() * quantity;
+
+                if(loggedInAccount->getBalance() < total)  // When user has insufficient balance
+                {
+                    cout << "Insufficient Balance! Retry" << endl;
+                    cout << "-----------------------------------------------------------" <<endl;
+                    this->run();
+                }
+                cout << "Do you want to add more products to cart? (Y/N): ";
+                product->setQuantity(product->getQuantity()-quantity);  //updating the inventory product quantity
+                product->addSales(quantity); //updating the sales of the product
+                cin >> choice;
+            } while (choice == 'Y' || choice == 'y');
+            cout << "Total amount: ₹" << total << endl<< "Transaction Completed!" << endl;
+            if (total > 0) {
+                static_cast<CustomerAccount*>(loggedInAccount)->updateBalance(-total);
+                loggedInAccount->expenditure += total;
+            }
+            inventory.saveInventoryToFile("inventory.csv");
+        } else {
+            cout << "You need to be logged in as a user to make a purchase." << endl;
+            cout << "-----------------------------------------------------------" <<endl;
+        }
+    }
+    void printHighestSpending(){
+        // CAN't do variable declaration in switch case
+        printHighestSpending();
+        cout << "-----------------------------------------------------------" <<endl;
+        cout << "\nList of highest spending users in descending order:" << endl;
+
+        // priority_queue<Account*, vector<Account*>, comparator> pq; //ANCHOR - This uses class or functor
+        priority_queue<Account*, vector<Account*>, decltype(compareAccounts)*> pq(compareAccounts);  // this uses function pointer
+        for (const auto& acc : accounts) {
+            pq.push(acc);
+        }
+        int i = 9;
+        cout << "Top 10 highest spending users:" << endl;
+
+        while (i && !pq.empty()) {
+            Account* acc = pq.top();
+            pq.pop();
+            cout << "Username: " << acc->getUsername() << ", Expenditure: " << acc->expenditure << endl;
+            i--;
+        }
+        cout << "-----------------------------------------------------------" <<endl;
+    }
 
     void run() {
         char choice;
@@ -520,7 +590,6 @@ public:
                 if (loggedInAccount && loggedInAccount->getAccountType() == "User") {
                     double amount;
                     cout << "-----------------------------------------------------------" <<endl;
-
                     cout << "Enter amount to update balance: ";
                     cin >> amount;
                     static_cast<CustomerAccount*>(loggedInAccount)->updateBalance(amount);
@@ -540,54 +609,7 @@ public:
                 }
                 break;
             case '6':{
-                cout<< "_____________________________________________________" << endl;
-                inventory.printAllProducts();
-                if (loggedInAccount && loggedInAccount->getAccountType() == "User") {
-                    double total = 0;
-                    char choice;
-                    do {
-                        int id;
-                        cout << "Enter product id: ";
-                        cin >> id;
-                        Product* product = inventory.findProduct(id);
-                        int quantity;
-                        if (!product) {
-                            cout << "Product not found." << endl;
-                            cout << "-----------------------------------------------------------" <<endl;
-                            continue;
-                        }
-                        cout << "Enter quantity: ";
-                        cin >> quantity;
-                        while(quantity<=0 || quantity > product->getQuantity())
-                        {
-                            cout << "Enter quantity in the range of 1 to " << product->getQuantity() << ": (_Enter Q to quit_)\n";
-                            cin >> quantity;
-                        }
-                      
-                        total += product->getPrice() * quantity;
-
-                        if(loggedInAccount->getBalance() < total)  // When user has insufficient balance
-                        {
-                            cout << "Insufficient Balance! Retry" << endl;
-                            cout << "-----------------------------------------------------------" <<endl;
-                            this->run();
-                        }
-                        cout << "Do you want to add more products to cart? (Y/N): ";
-                        product->setQuantity(product->getQuantity()-quantity);  //updating the inventory product quantity
-                        product->addSales(quantity); //updating the sales of the product
-                        cin >> choice;
-                    } while (choice == 'Y' || choice == 'y');
-                    cout << "Total amount: ₹" << total << endl<< "Transaction Completed!" << endl;
-                    if (total > 0) {
-                        static_cast<CustomerAccount*>(loggedInAccount)->updateBalance(-total);
-                        loggedInAccount->expenditure += total;
-                    }
-                    inventory.saveInventoryToFile("inventory.csv");
-                } else {
-                    cout << "You need to be logged in as a user to make a purchase." << endl;
-                    cout << "-----------------------------------------------------------" <<endl;
-
-                }
+                makeAPurchase();
                 break;}
 
             case '7':
@@ -595,24 +617,7 @@ public:
                 break;
 
             case '8': { // CAN't do variable declaration in switch case
-                cout << "-----------------------------------------------------------" <<endl;
-                cout << "\nList of highest spending users in descending order:" << endl;
-
-                // priority_queue<Account*, vector<Account*>, comparator> pq; //ANCHOR - This uses class or functor
-                priority_queue<Account*, vector<Account*>, decltype(compareAccounts)*> pq(compareAccounts);  // this uses function pointer
-                for (const auto& acc : accounts) {
-                    pq.push(acc);
-                }
-                int i = 9;
-                cout << "Top 10 highest spending users:" << endl;
-
-                while (i && !pq.empty()) {
-                    Account* acc = pq.top();
-                    pq.pop();
-                    cout << "Username: " << acc->getUsername() << ", Expenditure: " << acc->expenditure << endl;
-                    i--;
-                }
-                cout << "-----------------------------------------------------------" <<endl;
+                printHighestSpending();
                 break;
             }
             
@@ -626,8 +631,9 @@ public:
             }
         } while (true);
     }
+
     void runInv(){
-        
+
         cout << "-----------------------------------------------------------" <<endl;
         cout << "---------------Inventory Management System ----------------" <<endl;  
         cout << "------------------------- Welcome! ------------------------" <<endl;
