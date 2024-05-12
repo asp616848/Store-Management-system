@@ -62,7 +62,7 @@ void MerchantAccount::viewUsersWithBalances(const std::vector<Account *> &accoun
                                                     
             std::cout << "Username: " << acc->getUsername() << ", Balance: " << static_cast<CustomerAccount *>(acc)->getBalance() << std::endl; 
             // Print username and balance by explicitly casting 'acc' to CustomerAccount pointer using static_cast
-            // Assumes 'acc' is a CustomerAccount, may lead to runtime errors if 'acc' is not of that type
+            // Assumes 'acc' is a CustomerAccount, may lead to runtime errors if 'acc' is not of that type 
         }
     }
 }
