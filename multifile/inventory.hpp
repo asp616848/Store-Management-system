@@ -1,4 +1,4 @@
-#ifndef INVENTORY_HPP
+#ifndef INVENTORY_HPP // Header guard to prevent multiple inclusion of the header file
 #define INVENTORY_HPP
 
 #include "product.hpp"
@@ -9,7 +9,7 @@
 
 class Inventory {
 private:
-    std::vector<Product> products;
+    std::vector<Product> products; // Collection to store products
 
 public:
     void printAllProducts() const;
