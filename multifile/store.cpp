@@ -262,7 +262,7 @@ void Store::run() {
     char choice;
         do
         {
-            cout<< "Press ctrl + c to exit the program"<<endl;
+            cout<< "Press ctrl + c or E to exit the program"<<endl;
             cout << "-----------------------------------------------------------" << endl;
             cout << "Please choose an option:" << endl;
             cout << "1. Login" << endl;
@@ -274,6 +274,7 @@ void Store::run() {
             cout << "7. Stock Alert" << endl;
             cout << "8. List of highest spending users" << endl;
             cout << "Q. Quit and redirect to Inventory" << endl;
+            cout << "-----------------------------------------------------------" << endl;
             
             cin >> choice;
 
@@ -345,12 +346,17 @@ void Store::run() {
                 cout << "Goodbye!" << endl;
                 saveToFile();
                 runInv();
+                break;
+            case 'E':
+                cout << "Goodbye!" << endl;
+                saveToFile();
+                inventory.saveInventoryToFile("inventory.csv");
                 return;
             default:
                 cout << "Invalid Choice. Please Try again" << endl;
                 break;
             }
-        } 
+        }
         while (true);
 }
 void Store::runInv(){
@@ -358,7 +364,8 @@ void Store::runInv(){
     cout << "---------------Inventory Management System ----------------" <<endl;  
     cout << "------------------------- Welcome! ------------------------" <<endl;
     cout << "-----------------------------------------------------------" <<endl;
-    cout<< "Press ctrl + c to exit the program"<<endl;
+    cout<< "Press ctrl + c or E to exit the program"<<endl;
+
 
     
     char choice;
@@ -499,6 +506,11 @@ void Store::runInv(){
             inventory.saveInventoryToFile("inventory.csv");
             run();
             cout << "-----------------------------------------------------------" <<endl;
+        case 'E':
+            cout << "Goodbye!" << endl;
+            saveToFile();
+            inventory.saveInventoryToFile("inventory.csv");
+            return;
         default:
             cout << "Invalid Choice. Please Try again" << endl;
             cout << "-----------------------------------------------------------" <<endl;

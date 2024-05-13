@@ -36,7 +36,6 @@ public:
 // Derived class representing a customer account
 class CustomerAccount : public Account {
     double balance;
-
 public:
     // Constructor to initialize username, password, expenditure, and balance
     CustomerAccount(const std::string &username, const std::string &password, int expenditure = 0, int balance = 0);
