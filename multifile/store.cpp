@@ -282,6 +282,7 @@ void Store::run() {
                 break;
             case '3':
                 createSeller();
+                saveToFile();
                 cout << "-----------------------------------------------------------" <<endl;
 
                 break;

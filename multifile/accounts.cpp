@@ -1,8 +1,10 @@
 #include "accounts.hpp"
 #include <iostream>
-using namespace std;
+
+
 #define USER_TYPE_SELLER "Seller"
 #define USER_TYPE_USER "User"
+
 string Account::getUsername() const {
     return username;
 }
