@@ -403,6 +403,12 @@ void Store::runInv(){
 
             cin >> id;
             cout << "Enter product name: ";
+            Product* a = inventory.findProduct(id);
+            if(a != nullptr){
+                cout << "Product with this ID already exists. Please enter a different ID." << endl;
+                cout << "-----------------------------------------------------------" <<endl;
+                break;
+            }
             cin.ignore();
             getline(cin, name);
             cout << "Enter product category: ";
