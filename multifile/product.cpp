@@ -17,17 +17,12 @@ int Product::getId() const { return id; } // Return the ID of the product
 
 void Product::setId(int id) { this->id = id; } // Set the ID of the product to the provided value
 
-
-// Getter method to retrieve the name of a product
 string Product::getName() const { return name; } // Return the name of the product
 
-// Setter method to update the name of a product
 void Product::setName(string name) { this->name = name; }
 
-// Getter method to retrieve the category of a product
 string Product::getCategory() const { return category; }
 
-// Setter method to update the category of a product
 void Product::setCategory(string category) { this->category = category; }
 
 double Product::getPrice() const { return price; }
