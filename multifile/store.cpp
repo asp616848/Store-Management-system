@@ -49,6 +49,7 @@ Account *Store::login() {
     for (Account *acc : accounts) { // Iterate through existing accounts
         if (acc->authenticate(username, password)) { // If authentication succeeds (username & pwd match stored username & pwd)
             cout << "Login successful. Welcome, " << username << " (" << acc->getAccountType() << ")" << endl;
+            stockAlert(); // Check stock levels and issue alerts for low stock
             return acc;
         }
     }
@@ -490,7 +491,7 @@ void Store::runInv(){
             break;
         }
         case '8': { // CAN't do variable declaration in switch case
-                
+
                 priority_queue<Product> pq;
                 for (const auto& p : inventory.getProducts()) {
                     pq.push(p);

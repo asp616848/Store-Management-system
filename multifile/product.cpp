@@ -1,6 +1,6 @@
 #include "product.hpp" // Include the header file for the Product class
 
-// Overloaded less than operator to compare products based on total sales value
+// Overloaded less than operator to compare products based on total Revenue
 bool Product::operator < (const Product &other) const { return sales * price < other.sales * other.price; }
 
 // Method to get the total sales of a product
