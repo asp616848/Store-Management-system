@@ -18,8 +18,8 @@ string Account::getPassword() const {
 // Constructor for Account class
 Account::Account(const string &username, const string &password, int expenditure)
     : username(username), password(password), expenditure(expenditure) {}
-
-// Authentication method to check if provided username and password match
+// Virtual method to authenticate login credentials by comparing stored username 
+//and password to the entered credentials
 bool Account::authenticate(const string &inputUsername, const string &inputPassword) const {
     return username == inputUsername && password == inputPassword;
 }
@@ -28,6 +28,7 @@ bool Account::authenticate(const string &inputUsername, const string &inputPassw
 double Account::getBalance() const {
     return 0;
 }
+
 
 // CustomerAccount class implementation (derived from Account)
 CustomerAccount::CustomerAccount(const string &username, const string &password, int expenditure, int balance)
@@ -47,24 +48,26 @@ double CustomerAccount::getBalance() const {
 void CustomerAccount::updateBalance(double amount) {
     balance += amount;
 }
-
+// Constructor for MerchantAccount class
 // MerchantAccount class implementation (derived from Account)
-MerchantAccount::MerchantAccount(const string &username, const string &password)
-    : Account(username, password) {}
+MerchantAccount::MerchantAccount(const string &username, const string &password) : Account(username, password) {}
 
 // Method to return the type of account (for a merchant)
 string MerchantAccount::getAccountType() const {
     return USER_TYPE_SELLER;
 }
-
 // Method to view users (specifically customers) with balances
 void MerchantAccount::viewUsersWithBalances(const vector<Account *> &accounts) {
-    cout << "Users with balances:" << endl;
+    cout << "Users with balances:" << endl;// Iterate through the accounts vector
     for (const auto &acc : accounts) {
         // Check if the account is a CustomerAccount using dynamic_cast
-        if (dynamic_cast<CustomerAccount *>(acc)) {
+        if (dynamic_cast<CustomerAccount *>(acc)) {// Check if 'acc' can be safely casted to a CustomerAccount pointer using dynamic_cast
+                                                    // Helps ensure 'acc' is of type CustomerAccount to access its specific properties
+                                                    // Safely filters out non-CustomerAccount objects, avoiding potential errors
             // Output username and balance for customer accounts
             cout << "Username: " << acc->getUsername() << ", Balance: " << static_cast<CustomerAccount *>(acc)->getBalance() << endl;
+            // Print username and balance by explicitly casting 'acc' to CustomerAccount pointer using static_cast
+            // Assumes 'acc' is a CustomerAccount, may lead to runtime errors if 'acc' is not of that type 
         }
     }
 }
