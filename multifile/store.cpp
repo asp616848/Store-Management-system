@@ -160,41 +160,49 @@ void Store::loadFromFile() {
     }
 }
 
-void Store::printAccounts() {
-    for (Account *each : accounts) {
+// Function to print details of all accounts
+void Store::printAccounts() { 
+    for (Account *each : accounts) { // Iterate through accounts
         cout << each->getUsername() << endl;
         cout << each->getPassword() << endl;
     }
 }
 
+// Function to get the inventory associated with the store
 Inventory Store::getInventory() const {
     return inventory;
 }
 
+// Constructor for Store class
 Store::Store() {
-    inventory.loadInventoryFromFile("inventory.csv");
+    inventory.loadInventoryFromFile("inventory.csv"); // Load inventory from file
 }
 
+// Function to initiate loading of accounts from file
 void Store::Load() {
-    loadFromFile();
+    loadFromFile(); // Load accounts from file
 }
+
+// Function to find and print highest spending users
 void Store::HighestSpendingUsers() {
     // CAN't do variable declaration in switch case
     cout << "-----------------------------------------------------------" << endl;
     cout << "\nList of highest spending users in descending order:" << endl;
 
     // priority_queue<Account*, vector<Account*>, comparator> pq; //ANCHOR - This uses class or functor
+    // We're using a priority queue to efficiently retrieve the highest spending users. 
+    // It sorts account pointers based on their expenditure, allowing quick access to accounts with the highest expenditures.
     priority_queue<Account *, vector<Account *>, decltype(compareAccounts) *> pq(compareAccounts); // this uses function pointer
-    for (const auto &acc : accounts)
+    for (const auto &acc : accounts) // Iterate through accounts
     {
-        pq.push(acc);
+        pq.push(acc); // Push account pointer into priority queue
     }
-    int i = 9;
+    int i = 9; // Initialize counter for top 10 users
     cout << "Top 10 highest spending users:" << endl;
 
-    while (i && !pq.empty())
+    while (i && !pq.empty()) // Iterate until top 10 users are printed or queue is empty
     {
-        Account *acc = pq.top();
+        Account *acc = pq.top(); // Get top account from priority queue
         pq.pop();
         cout << "Username: " << acc->getUsername() << ", Expenditure: " << acc->expenditure << endl;
         i--;
