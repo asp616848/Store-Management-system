@@ -1,22 +1,20 @@
 #include "accounts.hpp"
 #include <iostream>
-
-bool Account::compareByExpenditure(const Account *a, const Account *b) {
-    return a->expenditure < b->expenditure;
-}
-
-std::string Account::getUsername() const {
+using namespace std;
+#define USER_TYPE_SELLER "Seller"
+#define USER_TYPE_USER "User"
+string Account::getUsername() const {
     return username;
 }
 
-std::string Account::getPassword() const {
+string Account::getPassword() const {
     return password;
 }
 
-Account::Account(const std::string &username, const std::string &password, int expenditure)
+Account::Account(const string &username, const string &password, int expenditure)
     : username(username), password(password), expenditure(expenditure) {}
 
-bool Account::authenticate(const std::string &inputUsername, const std::string &inputPassword) const {
+bool Account::authenticate(const string &inputUsername, const string &inputPassword) const {
     return username == inputUsername && password == inputPassword;
 }
 
@@ -24,11 +22,11 @@ double Account::getBalance() const {
     return 0;
 }
 
-CustomerAccount::CustomerAccount(const std::string &username, const std::string &password, int expenditure, int balance)
+CustomerAccount::CustomerAccount(const string &username, const string &password, int expenditure, int balance)
     : Account(username, password, expenditure), balance(balance) {}
 
-std::string CustomerAccount::getAccountType() const {
-    return "User";
+string CustomerAccount::getAccountType() const {
+    return USER_TYPE_USER;
 }
 
 double CustomerAccount::getBalance() const {
@@ -39,18 +37,18 @@ void CustomerAccount::updateBalance(double amount) {
     balance += amount;
 }
 
-MerchantAccount::MerchantAccount(const std::string &username, const std::string &password)
+MerchantAccount::MerchantAccount(const string &username, const string &password)
     : Account(username, password) {}
 
-std::string MerchantAccount::getAccountType() const {
-    return "Seller";
+string MerchantAccount::getAccountType() const {
+    return USER_TYPE_SELLER;
 }
 
-void MerchantAccount::viewUsersWithBalances(const std::vector<Account *> &accounts) {
-    std::cout << "Users with balances:" << std::endl;
+void MerchantAccount::viewUsersWithBalances(const vector<Account *> &accounts) {
+    cout << "Users with balances:" << endl;
     for (const auto &acc : accounts) {
         if (dynamic_cast<CustomerAccount *>(acc)) {
-            std::cout << "Username: " << acc->getUsername() << ", Balance: " << static_cast<CustomerAccount *>(acc)->getBalance() << std::endl;
+            cout << "Username: " << acc->getUsername() << ", Balance: " << static_cast<CustomerAccount *>(acc)->getBalance() << endl;
         }
     }
 }

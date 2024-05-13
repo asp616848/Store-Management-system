@@ -251,7 +251,7 @@ void Store::run() {
     char choice;
         do
         {
-            cout<< "Press ctrl + c or end to exit the program"<<endl;
+            cout<< "Press ctrl + c or E to exit the program"<<endl;
             cout << "-----------------------------------------------------------" << endl;
             cout << "Please choose an option:" << endl;
             cout << "1. Login" << endl;
@@ -336,7 +336,7 @@ void Store::run() {
                 saveToFile();
                 runInv();
                 break;
-            case 'end':
+            case 'E':
                 cout << "Goodbye!" << endl;
                 saveToFile();
                 inventory.saveInventoryToFile("inventory.csv");
@@ -353,7 +353,7 @@ void Store::runInv(){
     cout << "---------------Inventory Management System ----------------" <<endl;  
     cout << "------------------------- Welcome! ------------------------" <<endl;
     cout << "-----------------------------------------------------------" <<endl;
-    cout<< "Press ctrl + c or end to exit the program"<<endl;
+    cout<< "Press ctrl + c or E to exit the program"<<endl;
 
 
     
@@ -495,7 +495,7 @@ void Store::runInv(){
             inventory.saveInventoryToFile("inventory.csv");
             run();
             cout << "-----------------------------------------------------------" <<endl;
-        case 'end':
+        case 'E':
             cout << "Goodbye!" << endl;
             saveToFile();
             inventory.saveInventoryToFile("inventory.csv");

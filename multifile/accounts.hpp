@@ -25,7 +25,6 @@ public:
 
 class CustomerAccount : public Account {
     double balance;
-
 public:
     CustomerAccount(const std::string &username, const std::string &password, int expenditure = 0, int balance = 0);
 
