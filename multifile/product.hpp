@@ -2,12 +2,13 @@
 #define PRODUCT_HPP
 
 #include <string>
+using namespace std;
 
 class Product {
 private:
     int id;
-    std::string name;
-    std::string category;
+    string name;
+    string category;
     double price;
     int quantity;
     int sales;
@@ -24,14 +25,14 @@ public:
     void addSales(int quantity);
 
     // Constructor to initialize a Product object with provided values
-    Product(int id, std::string name, std::string category, double price, int quantity, int sales = 0);
+    Product(int id, string name, string category, double price, int quantity, int sales = 0);
 
     int getId() const;
     void setId(int id);
-    std::string getName() const;
-    void setName(std::string name);
-    std::string getCategory() const;
-    void setCategory(std::string category);
+    string getName() const;
+    void setName(string name);
+    string getCategory() const;
+    void setCategory(string category);
     double getPrice() const;
     void setPrice(double price);
     int getQuantity() const;

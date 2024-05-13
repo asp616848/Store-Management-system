@@ -5,18 +5,18 @@ void Inventory::printAllProducts() const {
 
     // Check if the inventory is empty
     if(products.empty()) {
-        std::cout << "No products available. (inventory.csv must be empty)" << std::endl;
-        std::cout << "-----------------------------------------------------------" << std::endl;
+        cout << "No products available. (inventory.csv must be empty)" << endl;
+        cout << "-----------------------------------------------------------" << endl;
         return;
     }
 
     // Iterate over each product and print its details
     for (const auto &product : products) {
-        std::cout << "ID : " << product.getId() << std::endl;
-        std::cout << "Name : " << product.getName() << std::endl;
-        std::cout << "Category : " << product.getCategory() << std::endl;
-        std::cout << "Price : ₹" << product.getPrice() << std::endl;
-        std::cout << "Quantity : " << product.getQuantity() << std::endl;
+        cout << "ID : " << product.getId() << endl;
+        cout << "Name : " << product.getName() << endl;
+        cout << "Category : " << product.getCategory() << endl;
+        cout << "Price : ₹" << product.getPrice() << endl;
+        cout << "Quantity : " << product.getQuantity() << endl;
     }
 }
 
@@ -26,19 +26,19 @@ void Inventory::addProduct(Product product) {
     // Check if the product ID already exists using binary search
     Product *found = findProduct(product.getId());
     if (found != nullptr) {
-        std::cout << "Id already exists." << std::endl;
-        std::cout << "-----------------------------------------------------------" << std::endl;
+        cout << "Id already exists." << endl;
+        cout << "-----------------------------------------------------------" << endl;
     } else {
 
         // Insert the product and maintain sorted order
         products.push_back(product);
-        std::cout << "Product added successfully." << std::endl;
-        std::cout << "-----------------------------------------------------------" << std::endl;
+        cout << "Product added successfully." << endl;
+        cout << "-----------------------------------------------------------" << endl;
     }
 }
 
 // Method to retrieve a copy of the products and return a vector containing all the products
-std::vector<Product> Inventory::getProducts() const {
+vector<Product> Inventory::getProducts() const {
     return products;
 }
 
@@ -50,10 +50,10 @@ void Inventory::removeProduct(int id) {
                                            //Auto deduces type from expression, over here it's assigning int
         products.erase(products.begin() + index); // Erases the product from 'products' vector at calculated index
                                                   //Uses products.begin() to get the iterator to the first element
-        std::cout << "Product removed successfully." << std::endl;
-        std::cout << "-----------------------------------------------------------" << std::endl;
+        cout << "Product removed successfully." << std::endl;
+        cout << "-----------------------------------------------------------" << std::endl;
     } else {
-        std::cout << "Id does not exist" << std::endl;
+        cout << "Id does not exist" << endl;
     }
 }
 
@@ -76,7 +76,7 @@ Product *Inventory::findProduct(int id) {
 }
 
 // Updates product details if found by ID
-void Inventory::updateProduct(int id, std::string name, std::string category, double price, int quantity) {
+void Inventory::updateProduct(int id, string name, string category, double price, int quantity) {
     bool found = false;
     for (auto &product : products) {
         if (product.getId() == id) {
@@ -89,29 +89,29 @@ void Inventory::updateProduct(int id, std::string name, std::string category, do
         }
     }
     if (!found) {
-        std::cout << "ID does not exist." << std::endl;
+        cout << "ID does not exist." << endl;
     }
 }
 
 // Saves inventory data to a file
-void Inventory::saveInventoryToFile(std::string filename) {
-    std::ofstream file;
-    file.open(filename, std::ios::out | std::ios::trunc);
+void Inventory::saveInventoryToFile(string filename) {
+    ofstream file;
+    file.open(filename, ios::out | ios::trunc);
     for (const auto &p : products) {
-        file << p.getId() << "," << p.getName() << "," << p.getCategory() << "," << p.getPrice() << "," << p.getQuantity() << "," << p.getTotalSales() << std::endl;
+        file << p.getId() << "," << p.getName() << "," << p.getCategory() << "," << p.getPrice() << "," << p.getQuantity() << "," << p.getTotalSales() << endl;
     }
     file.close();
 }
 
 // Loads inventory data from a file
-void Inventory::loadInventoryFromFile(std::string filename) {
-    std::ifstream file; // Declare an input file stream object
+void Inventory::loadInventoryFromFile(string filename) {
+    ifstream file;
     file.open(filename);
     if (file.is_open()) {
-        std::string line;
+        string line;
         while (getline(file, line)) {
-            std::stringstream ss(line); // Create a stringstream object to parse the line
-            std::string idStr, name, category, priceStr, quantityStr, salesStr; // Declare string variables to store data fields
+            stringstream ss(line); // Create a stringstream object to parse the line
+            string idStr, name, category, priceStr, quantityStr, salesStr; // Declare string variables to store data fields
                                                                                 // Extract data fields from the stringstream separated by commas
             getline(ss, idStr, ',');
             getline(ss, name, ',');
@@ -121,10 +121,10 @@ void Inventory::loadInventoryFromFile(std::string filename) {
             getline(ss, salesStr, ',');
 
             // Convert string data fields to their respective data types
-            int id = std::stoi(idStr); //stoi = string to int
-            double price = std::stod(priceStr); //stod = string to double
-            int quantity = std::stoi(quantityStr);
-            int sales = std::stoi(salesStr);
+            int id = stoi(idStr); //stoi = string to int
+            double price = stod(priceStr); //stod = string to double
+            int quantity = stoi(quantityStr);
+            int sales = stoi(salesStr);
             // Create a Product object using the extracted data
             Product p(id, name, category, price, quantity, sales);
             // Add the Product object to the products vector
@@ -132,6 +132,6 @@ void Inventory::loadInventoryFromFile(std::string filename) {
         }
         file.close();
     } else {
-        std::cout << "Error: Could not open file " << filename << std::endl;
+        cout << "Error: Could not open file " << filename << endl;
     }
 }

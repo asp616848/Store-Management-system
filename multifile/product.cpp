@@ -10,20 +10,25 @@ int Product::getTotalSales() const { return sales; }
 void Product::addSales(int quantity) { this->sales += quantity; }
 
 // Constructor to initialize a Product object with provided values
-Product::Product(int id, std::string name, std::string category, double price, int quantity, int sales)
+Product::Product(int id, string name, string category, double price, int quantity, int sales)
     : id(id), name(name), category(category), price(price), quantity(quantity), sales(sales) {}
 
 int Product::getId() const { return id; } // Return the ID of the product
 
 void Product::setId(int id) { this->id = id; } // Set the ID of the product to the provided value
 
-std::string Product::getName() const { return name; } // Return the name of the product
 
-void Product::setName(std::string name) { this->name = name; }
+// Getter method to retrieve the name of a product
+string Product::getName() const { return name; } // Return the name of the product
 
-std::string Product::getCategory() const { return category; }
+// Setter method to update the name of a product
+void Product::setName(string name) { this->name = name; }
 
-void Product::setCategory(std::string category) { this->category = category; }
+// Getter method to retrieve the category of a product
+string Product::getCategory() const { return category; }
+
+// Setter method to update the category of a product
+void Product::setCategory(string category) { this->category = category; }
 
 double Product::getPrice() const { return price; }
 
