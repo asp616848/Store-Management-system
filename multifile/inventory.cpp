@@ -29,7 +29,7 @@ void Inventory::addProduct(Product product) {
         cout << "Id already exists." << endl;
         cout << "-----------------------------------------------------------" << endl;
     } else {
-
+        
         // Insert the product and maintain sorted order
         products.push_back(product);
         cout << "Product added successfully." << endl;

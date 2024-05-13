@@ -295,13 +295,11 @@ void Store::run() {
                 break;
             case '2':
                 createUser();
-                saveToFile();
                 cout << "-----------------------------------------------------------" <<endl;
                 
                 break;
             case '3':
                 createSeller();
-                saveToFile();
                 cout << "-----------------------------------------------------------" <<endl;
 
                 break;
@@ -415,7 +413,6 @@ void Store::runInv(){
             cin >> quantity;
             Product product(id, name, category, price, quantity);
             inventory.addProduct(product);
-            inventory.saveInventoryToFile("inventory.csv");
             break;
         }
 
@@ -424,7 +421,6 @@ void Store::runInv(){
             cout << "Enter product id: ";
             cin >> id;
             inventory.removeProduct(id);
-            inventory.saveInventoryToFile("inventory.csv");
             break;
         }
 
@@ -509,10 +505,12 @@ void Store::runInv(){
         case 'Q':
             cout << "Goodbye!" << endl;
             inventory.saveInventoryToFile("inventory.csv");
+            saveToFile();
             cout << "-----------------------------------------------------------" <<endl;
         case 'q':
             cout << "Welcome to Accounts!" << endl;
             inventory.saveInventoryToFile("inventory.csv");
+            saveToFile();
             run();
             cout << "-----------------------------------------------------------" <<endl;
         case 'E':
