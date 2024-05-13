@@ -1,0 +1,3 @@
+Poor format of inventory or users .csv files isn't handles here.
+This code is good for backend with one more layer, else directly using this will allow anyone to make a seller account and priviledges. (Can be solved using Licences)
+non int input in int places anywhere leads to severe errors like infinite loops.
