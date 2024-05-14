@@ -1,0 +1,19 @@
+{
+	"nodes":[
+		{"id":"d8d2f651d69b7526","type":"text","text":"Account:-\n\n> \tprivate:\t\n> \t\tUsername:String\n> \t\tPassword:String\n> \tpublic:\n> \t\tAccount(username: string, password: string)\n> \t\tauthenticate(inputUsername: string, inputPassword: string): bool\n> \t\tgetType(): string","x":-2805,"y":-1170,"width":585,"height":310,"color":"6"},
+		{"id":"8ddf514b6d705ac3","type":"text","text":"UserAccount:- \n\n> ```\n> \tprivate:\n> \t\tdouble balance;\n> \n> \tpublic:\n> \n> \t\tUserAccount(const string& username, const string& password)\n> \t\tstring getType() const override {//Implementation}\n> \t\tdouble getBalance() const {// implementation}\n> \t\tvoid updateBalance(double amount) {// implementation}\n> ```","x":-3200,"y":-740,"width":740,"height":420,"color":"4"},
+		{"id":"098a501e7a4466e9","type":"text","text":"SellerAccount:-\n\n> `public`:\n> \n> \tSellerAccount(const string& username, const string& password) : Account(username, password) {}\n> \tstring getType() const override {// implement seller return}\n> \tvoid viewUsersWithBalances(const vector<Account*>& accounts) {\\\\Implement print ledger of balances}\n> \t","x":-2440,"y":-739,"width":940,"height":319,"color":"5"},
+		{"id":"0f44a05cd45cb14f","type":"text","text":"# ACCOUNT/ LEDGER MANAGEMENT","x":-2667,"y":-1320,"width":527,"height":80,"color":"#ff00f7"},
+		{"id":"2aa74e190243a88a","type":"text","text":"#### **class Product**\n`{` \n\t`+id: int` \n\t`+name: string`\n\t`+category: string` \n\t`+price: double` \n\t `+quantity: int`\n\t `+Product(id: int, name: string,`\n\t `+category: string, price: double, quantity: int)`\n\n`}`","x":-1180,"y":-780,"width":535,"height":360,"color":"2"},
+		{"id":"43501d127ae1dc08","type":"text","text":"#### **class Inventory**\n`{` \n`+ products: vector<Product>` \n`+ addProduct(product: Product)`\n`+ removeProduct(id: int)` \n`+ viewStock()` \n`+analyzeStockTrendsAndRecommendBusinessTactics()`\n``}``","x":-1380,"y":-1240,"width":431,"height":360,"color":"#ff5757"},
+		{"id":"3d95a4cd137984d1","type":"text","text":"#### **class Store** `{` \n`+ inventory: Inventory` \n`+ accounts: vector<Account*>`\n`+ addAccount(account: Account*)`\n`+ removeAccount(id: int)`\n`+ processOrder(order: Order)` \n`+ manageSales()` \n`+ manageCustomers()` \n`}`","x":-2010,"y":-1500,"width":431,"height":360,"color":"4"},
+		{"id":"1e542f097e30722a","type":"text","text":"# INVENTORY MANAGEMENT STRUCTURE","x":-1440,"y":-1350,"width":640,"height":60,"color":"#1e00ff"}
+	],
+	"edges":[
+		{"id":"1fed89ddc5fb4d7c","fromNode":"d8d2f651d69b7526","fromSide":"bottom","toNode":"8ddf514b6d705ac3","toSide":"top"},
+		{"id":"f2365dd5dd70f033","fromNode":"d8d2f651d69b7526","fromSide":"bottom","toNode":"098a501e7a4466e9","toSide":"top"},
+		{"id":"22910b89af739d26","fromNode":"43501d127ae1dc08","fromSide":"bottom","toNode":"2aa74e190243a88a","toSide":"top"},
+		{"id":"b6dc85790bfecfc8","fromNode":"3d95a4cd137984d1","fromSide":"right","toNode":"43501d127ae1dc08","toSide":"left"},
+		{"id":"731102892576781e","fromNode":"3d95a4cd137984d1","fromSide":"left","toNode":"d8d2f651d69b7526","toSide":"right"}
+	]
+}
