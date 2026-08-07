@@ -1,77 +1,76 @@
-## Store Management system 
-[work in progress]
----
+# Store Management System
 
-#### Introduction
+A console-based store inventory and accounts management system written in C++, built to practice object-oriented programming (inheritance, polymorphism, operator overloading) and core data structures (vectors, priority queues, file-backed persistence).
 
-This repository contains a C++ implementation of a store system, designed to manage user accounts, seller accounts, inventory, and store operations. It provides functionalities for users to purchase products, sellers to manage their inventory, and administrators to oversee the system.
-![Image Alt text](singleFile/flowaccounts.png)
----
+**Live demo / design overview:** https://ims0.my.canva.site/
 
-#### Components
+## Overview
 
-1. **Accounts**:
-   - **Account**: Base class representing user accounts. It encapsulates a username and password and provides authentication functionality.
-   - **UserAccount**: Derived class representing user accounts. It includes a balance attribute for managing user finances.
-   - **SellerAccount**: Derived class representing seller accounts. It enables sellers to view users' balances.
+The system models a small store with two areas that a single running program switches between: an **Accounts** module (login, customers, sellers) and an **Inventory** module (products and stock). Data for both is persisted to disk as CSV, so state survives between runs.
 
-2. **Inventory**:
-   - **Product**: Class representing products available in the inventory. It includes attributes such as ID, name, category, price, and quantity.
-   - **Inventory**: Manages the collection of products. It provides methods for adding, removing, and viewing products, as well as analyzing stock trends.
+## Features
 
-3. **Store**:
-   - **Store**: Combines functionalities related to inventory and accounts management within the store.
+**Accounts**
+- Base `Account` class with username/password authentication, extended by `CustomerAccount` (has a balance and running expenditure) and `SellerAccount`/`MerchantAccount`.
+- Create customer and seller accounts, log in, and route to role-specific menus.
+- Customers can top up/update their balance; sellers can view all customers' balances.
+- Account credentials and balances are obfuscated on disk with a Caesar-cipher-based `encrypt`/`decrypt` before being written to `users.csv`.
+- "Highest spending users" report, computed with a `priority_queue` ordered by expenditure.
 
----
-![Image Alt text](singleFile/iNVENTORYflow.png)
-#### Usage
+**Inventory**
+- `Product` class (id, name, category, price, quantity, sales) with `operator<` support so products can be ranked.
+- Add, remove, find, and update products by ID.
+- View the full product catalog.
+- Save/load the catalog to/from `inventory.csv`.
+- "Most selling products" report via a `priority_queue` ordered by total units sold.
+- Automatic **low-stock alert** on login/menu access when a product's quantity drops to 4 or fewer.
 
-1. **Accounts Management**:
-   - Users and sellers can create accounts with unique usernames and passwords.
-   - Users can check their balance and update it accordingly.
-   - Sellers can view users' balances.
+**Store / Checkout**
+- `Store` ties accounts and inventory together and drives the two text menus (`run()` for accounts, `runInv()` for inventory).
+- Logged-in customers can make purchases: pick a product by ID, choose a quantity (validated against available stock), add multiple items to a running cart, and check out — the purchase decrements stock, deducts the customer's balance, and updates the product's sales counter and the customer's total expenditure.
+- Insufficient balance is detected and blocks the purchase.
 
-2. **Inventory Management**:
-   - Sellers can add products to their inventory, specifying product details like name, category, price, and quantity.
-   - Sellers can remove products from their inventory.
-   - Sellers can view their current stock of products.
-   - Inventory allows analyzing stock trends to recommend business tactics.
+## Tech stack
 
-3. **Store Operations**:
-   - The Store class integrates accounts and inventory functionalities for comprehensive store management.
+- **Language:** C++ (C++11 or later)
+- **Standard library only:** `<vector>`, `<queue>` (`std::priority_queue`), `<fstream>`/`<sstream>` for CSV persistence, `<string>` — no external dependencies
+- **Persistence:** plain CSV files (`users.csv`, `inventory.csv`) read/written next to the executable
+- **Build tooling:** compiled directly with GCC/Clang (a VS Code `tasks.json`/`launch.json` is included for build-and-debug inside the editor)
 
----
+## Project layout
 
-#### Compilation and Execution
-
-To compile and execute the store system:
-
-1. Ensure you have a C++ compiler installed on your system.
-2. Clone the repository to your local machine.
-3. Navigate to the directory containing the source files.
-4. Compile the source files using your preferred C++ compiler.
-5. Run the executable generated after compilation.
-
-Example commands (using g++ compiler):
-For multifile:
-```bash
-g++ main.cpp store.cpp inventory.cpp accounts.cpp product.cpp
-./a.out
 ```
-For singleFile:
-```bash
-g++ main.cpp
-./a.out
+multifile/
+├── main.cpp          # entry point, chooses Accounts or Inventory flow
+├── store.hpp/.cpp     # Store: menus, login, purchases, CSV persistence
+├── accounts.hpp/.cpp  # Account / CustomerAccount / MerchantAccount
+├── inventory.hpp/.cpp # Inventory: CRUD over products
+├── product.hpp/.cpp   # Product model
+├── users.csv          # persisted accounts (encrypted)
+├── inventory.csv      # persisted product catalog
+├── TestAccounts/      # sample manual test transcripts for the accounts flow
+├── TestInventory/     # sample manual test transcripts for the inventory flow
+└── EdgeCasesStore/    # notes on known edge cases
 ```
----
 
-#### Contributions
+## Build & run
 
-Contributions to this repository are welcome. If you find any bugs or have suggestions for improvements, feel free to submit a pull request or open an issue.
+Requires a C++ compiler (g++ or clang++).
 
----
+```bash
+git clone https://github.com/asp616848/Store-Management-system.git
+cd Store-Management-system/multifile
 
+g++ main.cpp store.cpp inventory.cpp accounts.cpp product.cpp -o store
+./store
+```
 
----
+On startup you'll be asked whether to enter the **Accounts** menu (`1`) or the **Inventory** menu (`0`); both stay in a loop until you quit (`Q`/`E`), at which point accounts and inventory are saved back to `users.csv` and `inventory.csv`.
 
-Feel free to expand this documentation further based on your project's specific requirements and include details about additional features, usage examples, or any other relevant information.
+## Status
+
+This is a learning/portfolio project and is functionally complete for its original scope (accounts + inventory + purchasing flow), but is not hardened for production use — passwords are obfuscated with a simple Caesar cipher rather than a real hashing scheme, and there is no automated test suite (see `TestAccounts/` and `TestInventory/` for manual test transcripts).
+
+## Contributing
+
+Bug reports and pull requests are welcome — open an issue or PR with suggested improvements.
